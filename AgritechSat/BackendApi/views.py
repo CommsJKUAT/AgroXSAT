@@ -4,14 +4,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
-import logging
+
 
 def homepage(request):
     return HttpResponse("Agrosat Backend Apis!")
 
 @api_view(['POST'])
 def backendapires(request):
-    logger.info(f"Request Data: {request.data}")
     serializer = UserSerializer(data=request.data)
 
     if serializer.is_valid():
