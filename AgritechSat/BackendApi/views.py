@@ -13,10 +13,9 @@ def homepage(request):
 def backendapires(request):
     serializer = UserSerializer(data=request.data)
     content = request.data
-    content = content.replace('\r\n', '').rstrip(',')
-    data = json.loads(content)
+    
 
-    print(data)
+    print(content)
     if serializer.is_valid():
         # Process data (e.g., save to database)
         return Response({
