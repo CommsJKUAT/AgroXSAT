@@ -14,24 +14,9 @@ def homepage(request):
 @api_view(['POST'])
 def backendapires(request):
     serializer = UserSerializer(data=request.data)
-    query_dict = request.data
+    content = request.data
 
-    json_string = query_dict.get('_content', [None])[0]
-
-    if json_string:
-    # Clean up the JSON string
-        cleaned_json_string = json_string.strip()
-    
-    # Create a new QueryDict with the cleaned JSON string
-        cleaned_query_dict = QueryDict(
-            dict(_content_type=query_dict['_content_type'], _content=[cleaned_json_string])
-        )
-    
-        print(cleaned_query_dict)
-    else:
-        print("No JSON content found in QueryDict.")
-
-    print(query_dict)
+    print(content)
     if serializer.is_valid():
         # Process data (e.g., save to database)
         return Response({
