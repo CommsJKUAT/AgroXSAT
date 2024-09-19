@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import homepage
+from .views import homepage,backendapires
 
 
 urlpatterns = [
-    path('', homepage, name="homepage"),
+    path('', backendapires, name="homepage"),
     
     
     
