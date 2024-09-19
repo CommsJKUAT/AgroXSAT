@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
-
+import json
 
 def homepage(request):
     return HttpResponse("Agrosat Backend Apis!")
@@ -12,7 +12,11 @@ def homepage(request):
 @api_view(['POST'])
 def backendapires(request):
     serializer = UserSerializer(data=request.data)
-    print(request.data)
+    content = request.data
+    content = content.replace('\r\n', '').rstrip(',')
+    data = json.loads(content)
+
+    print(data)
     if serializer.is_valid():
         # Process data (e.g., save to database)
         return Response({
