@@ -2,6 +2,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -78,6 +79,7 @@ DATABASES = {
         'PORT': os.environ.get('PORT') ,       
     }
 }
+DATABASES['default'] = dj_database_url.parse(os.getenv("DATABASECREDS"))
 AUTH_USER_MODEL = 'Backend.CustomUser'
 
 # Password validation
