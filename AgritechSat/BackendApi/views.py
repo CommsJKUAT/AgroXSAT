@@ -12,7 +12,7 @@ def homepage(request):
 @api_view(['POST'])
 def backendapires(request):
     serializer = UserSerializer(data=request.data)
-
+    print(request.data)
     if serializer.is_valid():
         # Process data (e.g., save to database)
         return Response({
