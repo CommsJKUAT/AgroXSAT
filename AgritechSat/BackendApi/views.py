@@ -5,10 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
 from rest_framework.parsers import JSONParser
+from django.views.decorators.csrf import csrf_exempt
 
 def homepage(request):
     return HttpResponse("Agrosat Backend Apis!")
 
+@csrf_exempt
 def backendapires(request):
     # Check if the request is POST and content-type is application/json
     if request.method == 'POST' and request.content_type == 'application/json':
