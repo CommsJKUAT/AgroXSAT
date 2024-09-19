@@ -21,7 +21,7 @@ DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
-    '*'
+    'https://agroxsat.onrender.com/'
 ]
 
 # Application definition
