@@ -13,25 +13,6 @@ def homepage(request):
 
 @api_view(['POST'])
 def backendapires(request):
-    json_content = request.data.get('_content', [None])[0]
+    json_content = request.content_type
     print(json_content)
-    if json_content:
-        try:
-            # Parse the JSON content
-            content = json.loads(json_content)
-            temperature = content.get('temperature')
-            humidity = content.get('humidity')
-            
-            # Return the desired content format
-            return Response({
-                'temperature': temperature,
-                'humidity': humidity
-            }, status=status.HTTP_200_OK)
-        except json.JSONDecodeError:
-            return Response({
-                'message': 'Invalid JSON format'
-            }, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        return Response({
-            'message': 'No content provided'
-        }, status=status.HTTP_400_BAD_REQUEST)
+    
