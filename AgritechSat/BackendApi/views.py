@@ -5,25 +5,26 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
 import json
-from django.http import JsonResponse
+
 
 
 def homepage(request):
     return HttpResponse("Agrosat Backend Apis!")
 
-
+@api_view(['POST'])
 def backendapires(request):
-    if request.method == "POST":
-        try:
-            # Parse the JSON data from the request body
-            data = json.loads(request.body)
-            temperature = data.get('temperature')
-            humidity = data.get('humidity')
-            
-            # Process the data as needed
-            return JsonResponse({'temperature': temperature, 'humidity': humidity})
-        
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+    serializer = UserSerializer(data=request.data)
+    content = request.data
+
+    print(content)
+    if serializer.is_valid():
+        # Process data (e.g., save to database)
+        return Response({
+            'message': 'Data received successfully!',
+            'data': serializer.validated_data
+        }, status=status.HTTP_201_CREATED)
+    else:
+        return Response({
+            'message': 'Invalid data',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
