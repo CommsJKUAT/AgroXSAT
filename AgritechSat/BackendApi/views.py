@@ -18,7 +18,7 @@ class backendapires(APIView):
     def post(self, request, *args, **kwargs):
         try:
             # Assuming the request is in JSON format, DRF automatically parses it.
-            data = request.data
+            data = str(request.data)
             print(data)
             temperature = data.get('temperature')
             humidity = data.get('humidity')
