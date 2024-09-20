@@ -4,4 +4,10 @@ content= {"_content_type": ["application/json"], "_content": ["{\r\n        \"te
 
 
 content = content.get('_content')  # Access the content from the QueryDict
-print(content[0].replace("\r\n", ""))
+content=content[0].replace("\r\n", "")
+print(content)
+data = json.loads(content)
+temperature = data.get('temperature')
+humidity = data.get('humidity')
+print(temperature)
+print(humidity)
