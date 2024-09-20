@@ -13,6 +13,8 @@ def homepage(request):
 
 @api_view(['POST'])
 def backendapires(request):
-    json_content = request.data
+    json_content = request.data  # If using Django Rest Framework (DRF), otherwise use request.POST
     print(json_content.get('_content'))
-    return json_content
+    
+    # Return the content as a JSON response
+    return JsonResponse(json_content)
