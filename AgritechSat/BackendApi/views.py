@@ -14,7 +14,7 @@ def homepage(request):
 @api_view(['POST'])
 def backendapires(request):
     serializer = UserSerializer(data=request.data)
-    content = data
+    content = request.data
 
     print(content)
     if serializer.is_valid():
