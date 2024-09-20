@@ -20,9 +20,11 @@ class backendapires(APIView):
             # Assuming the request is in JSON format, DRF automatically parses it.
             data = dict(request.data)
             data_json = json.dumps(data)
+            data_json= data_json.get('_content')  # Access the content from the QueryDict
+            print(data_json[0].replace("\r\n", ""))
             print(data_json)
-            temperature = data.get('temperature')
-            humidity = data.get('humidity')
+            temperature = data_json.get('temperature')
+            humidity = data_json.get('humidity')
 
             # Simple validation check
             if temperature is None or humidity is None:
