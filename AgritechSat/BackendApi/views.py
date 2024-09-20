@@ -22,9 +22,9 @@ class backendapires(APIView):
             data_json = json.dumps(data)
             data_json = data_json.get('_content')  # Access the content from the QueryDict
             data_json = data_json[0].replace("\r\n", "")
-            data_json =json.loads(data_json )
-            temperature = data_json.get('temperature')
-            humidity = data_json.get('humidity')
+            data =json.loads(data_json )
+            temperature = data.get('temperature')
+            humidity = data.get('humidity')
 
             # Simple validation check
             if temperature is None or humidity is None:
