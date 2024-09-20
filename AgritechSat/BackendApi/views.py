@@ -14,7 +14,7 @@ def homepage(request):
 @api_view(['POST'])
 def backendapires(request):
     json_content = request.data.get('_content', [None])[0]
-    
+    print(json_content)
     if json_content:
         try:
             # Parse the JSON content
