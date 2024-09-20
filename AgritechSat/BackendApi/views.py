@@ -13,8 +13,18 @@ def homepage(request):
 
 @api_view(['POST'])
 def backendapires(request):
-    json_content = request.data  # If using Django Rest Framework (DRF), otherwise use request.POST
-    print(json_content.get('_content'))
-    
-    # Return the content as a JSON response
-    return JsonResponse(json_content)
+    serializer = UserSerializer(data=request.data)
+    content = request.data
+
+    print(content)
+    if serializer.is_valid():
+        # Process data (e.g., save to database)
+        return Response({
+            'message': 'Data received successfully!',
+            'data': serializer.validated_data
+        }, status=status.HTTP_201_CREATED)
+    else:
+        return Response({
+            'message': 'Invalid data',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
