@@ -13,18 +13,25 @@ def homepage(request):
 
 @api_view(['POST'])
 def backendapires(request):
-    serializer = UserSerializer(data=request.data)
-    content = request.data
-
-    print(content)
-    if serializer.is_valid():
-        # Process data (e.g., save to database)
-        return Response({
-            'message': 'Data received successfully!',
-            'data': serializer.validated_data
-        }, status=status.HTTP_201_CREATED)
+     json_content = request.data.get('_content', [None])[0]
+    
+    if json_content:
+        try:
+            # Parse the JSON content
+            content = json.loads(json_content)
+            temperature = content.get('temperature')
+            humidity = content.get('humidity')
+            
+            # Return the desired content format
+            return Response({
+                'temperature': temperature,
+                'humidity': humidity
+            }, status=status.HTTP_200_OK)
+        except json.JSONDecodeError:
+            return Response({
+                'message': 'Invalid JSON format'
+            }, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({
-            'message': 'Invalid data',
-            'errors': serializer.errors
+            'message': 'No content provided'
         }, status=status.HTTP_400_BAD_REQUEST)
