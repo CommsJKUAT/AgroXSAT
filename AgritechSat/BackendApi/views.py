@@ -13,7 +13,7 @@ def homepage(request):
 
 @api_view(['POST'])
 def backendapires(request):
-    json_content = request.content
+    json_content = request._content
     print(json_content)
     if json_content:
         try:
