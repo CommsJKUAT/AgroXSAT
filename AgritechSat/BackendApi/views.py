@@ -22,7 +22,9 @@ class backendapires(APIView):
             data_json = json.dumps(data)
             data_json = data_json.get('_content')  # Access the content from the QueryDict
             data_json = data_json[0].replace("\r\n", "")
-            data =json.loads(data_json )
+            print(data_json)
+            data1 = json.loads(data_json)
+            print(data1)
             temperature = data.get('temperature')
             humidity = data.get('humidity')
 
