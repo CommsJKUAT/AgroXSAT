@@ -3,7 +3,7 @@ from .views import homepage,backendapires
 
 
 urlpatterns = [
-    path('', backendapires, name="homepage"),
+    path('', backendapires.as_view(), name="homepage"),
     
     
     
