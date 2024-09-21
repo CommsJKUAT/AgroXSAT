@@ -17,14 +17,20 @@ def homepage(request):
 class backendapires(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Assuming the request is in JSON format, DRF automatically parses it.
-            data = dict(request.data)
-            data_json = json.dumps(data)
-            data_json = data_json.get('_content')  # Access the content from the QueryDict
-            data_json = data_json[0].replace("\r\n", "")
-            print(data_json)
-            data1 = json.loads(data_json)
-            print(data1)
+            # Check if request.data is a dictionary (it will be if the content is JSON)
+            if isinstance(request.data, dict):
+                data = request.data
+            else:
+                # If not, it's likely a QueryDict (e.g., form-encoded data)
+                # Convert QueryDict to a regular dictionary
+                data = dict(request.data)
+                
+                # Get the JSON content if needed
+                data_json = data.get('_content', '')  # Assuming '_content' exists
+                data_json = data_json.replace("\r\n", "")  # Clean up new lines if any
+                data = json.loads(data_json)  # Convert JSON string to dict
+
+            # Extract temperature and humidity
             temperature = data.get('temperature')
             humidity = data.get('humidity')
 
