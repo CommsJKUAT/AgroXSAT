@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import homepage,register
+from .views import sensor_data_view,register
 
 
 urlpatterns = [
-    path('', homepage, name="homepage"),
+    path('', sensor_data_view, name="homepage"),
     path('register/', register, name="homepage"),
     
     
