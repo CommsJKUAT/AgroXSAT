@@ -18,18 +18,19 @@ class backendapires(APIView):
     def post(self, request, *args, **kwargs):
         try:
             # Check if request.data is a dictionary (it will be if the content is JSON)
-            if isinstance(request.data, dict):
+            if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print(data)
+                print("Parsed as JSON:", data)
             else:
-                # If not, it's likely a QueryDict (e.g., form-encoded data)
-                # Convert QueryDict to a regular dictionary
+                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print(data)
-                # Get the JSON content if needed
-                data_json = data.get('_content', '')  # Assuming '_content' exists
+                print("QueryDict Data:", data)
+                
+                # Extract JSON content from '_content' key
+                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
                 data_json = data_json.replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to dict
+                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
+                print("Extracted Data:", data)
 
             # Extract temperature and humidity
             temperature = data.get('temperature')
