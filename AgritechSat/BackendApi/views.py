@@ -6,7 +6,7 @@ from rest_framework import status
 from .serializers import UserSerializer
 import json
 from rest_framework.views import APIView
-
+from Backend.models import SensorData
 
 
 
@@ -43,6 +43,12 @@ class backendapires(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Do something with the data (e.g., save to DB or further processing)
+            sensor_data = SensorData(
+                temperature=temperature,
+                humidity=humidity,
+                timestamp=timestamp
+            )
+            sensor_data.save()
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         
         except Exception as e:
