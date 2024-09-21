@@ -36,7 +36,7 @@ class backendapires(APIView):
             # Extract temperature and humidity
             temperature = data.get('temperature')
             humidity = data.get('humidity')
-            time = data.get('timestamp')
+            timestamp = data.get('timestamp')
 
             # Simple validation check
             if temperature is None or humidity is None:
