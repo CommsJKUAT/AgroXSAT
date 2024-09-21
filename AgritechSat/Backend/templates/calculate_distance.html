@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Calculator</title>
+</head>
+<body>
+    <h1>Distance Calculator</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Calculate Distance</button>
+    </form>
+
+    {% if distance is not None %}
+        <h2>Distance: {{ distance|floatformat:2 }} km</h2>
+    {% endif %}
+</body>
+</html>
