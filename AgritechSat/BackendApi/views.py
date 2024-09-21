@@ -20,6 +20,7 @@ class backendapires(APIView):
             # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict):
                 data = request.data
+                print(data)
             else:
                 # If not, it's likely a QueryDict (e.g., form-encoded data)
                 # Convert QueryDict to a regular dictionary
