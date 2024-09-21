@@ -24,7 +24,7 @@ class backendapires(APIView):
                 # If not, it's likely a QueryDict (e.g., form-encoded data)
                 # Convert QueryDict to a regular dictionary
                 data = dict(request.data)
-                
+                print(data)
                 # Get the JSON content if needed
                 data_json = data.get('_content', '')  # Assuming '_content' exists
                 data_json = data_json.replace("\r\n", "")  # Clean up new lines if any
