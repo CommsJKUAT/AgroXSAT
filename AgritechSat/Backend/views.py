@@ -42,7 +42,11 @@ def register(request):
         username = data['username']
         email = data['email']
         password = data['password']
+        confirm_password = data['confirm-password']
         
+        if password != confirm_password:
+            return Response({"detail": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+
 
         if User.objects.filter(email=email).exists():
             return Response({"detail": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
