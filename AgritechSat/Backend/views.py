@@ -14,49 +14,49 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated,AllowAny
 
 
-#class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-#    @classmethod
-#    def get_token(cls, user):
-#        token = super().get_token(user)
-#
-#        # Add custom claims
-#        token['username'] = user.username
-#        # ...
-#
-#        return token
-#
-#
-#class MyTokenObtainPairView(TokenObtainPairView):
-#    serializer_class = MyTokenObtainPairSerializer
-#
-#@api_view(['POST'])
-#@permission_classes([AllowAny])
-#def register(request):
-#    
-#    serializer = UserSerializer(data=request.data)
-#    if serializer.is_valid():
-#        serializer.save()
-#        return Response(serializer.data, status=status.HTTP_201_CREATED)
-#    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#@api_view(['POST'])
-#@permission_classes([AllowAny])
-#def login(request):
-#    serializer = MyTokenObtainPairSerializer(data=request.data)
-#    if serializer.is_valid():
-#        user = serializer.user
-#        token = MyTokenObtainPairSerializer.get_token(user)
-#        refresh = token['refresh']
-#        access = token['access']
-#        return Response({
-#            'refresh': str(refresh),
-#            'access': str(access),
-#            'user': {
-#                'username': user.username,
-#                'email': user.email
-#            }
-#        }, status=status.HTTP_200_OK)
-#    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        # ...
+
+        return token
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    serializer = MyTokenObtainPairSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.user
+        token = MyTokenObtainPairSerializer.get_token(user)
+        refresh = token['refresh']
+        access = token['access']
+        return Response({
+            'refresh': str(refresh),
+            'access': str(access),
+            'user': {
+                'username': user.username,
+                'email': user.email
+            }
+        }, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def sensor_data_view(request):
     sensor_data = SensorData.objects.all()  # Fetch all records from the database
