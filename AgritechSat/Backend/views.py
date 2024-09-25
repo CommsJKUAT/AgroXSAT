@@ -36,7 +36,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-   serializer = UserRegistrationSerializer(data=request.data)
+    serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()  # Save the user if the data is valid
         return Response({"detail": "User created successfully!"}, status=status.HTTP_201_CREATED)
