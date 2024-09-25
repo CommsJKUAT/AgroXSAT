@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
-
+from .serializers import UserRegistrationSerializer
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -36,30 +36,11 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-    
-    try:
-        data = request.data
-        username = data['username']
-        email = data['email']
-        password = data['password']
-        confirm_password = data['confirm-password']
-        
-        if password != confirm_password:
-            return Response({"detail": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-        if User.objects.filter(email=email).exists():
-            return Response({"detail": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = User.objects.create(
-            username=username,
-            email=email,
-            password=make_password(password),
-        )
-        user.save()
+   serializer = UserRegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()  # Save the user if the data is valid
         return Response({"detail": "User created successfully!"}, status=status.HTTP_201_CREATED)
-    except Exception as e:
-        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
