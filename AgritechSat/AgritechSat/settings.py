@@ -125,7 +125,7 @@ DATABASES = {
     }
 }
 DATABASES['default'] = dj_database_url.parse(os.getenv("DATABASECREDS"))
-AUTH_USER_MODEL = 'Backend.CustomUser'
+#AUTH_USER_MODEL = 'Backend.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
