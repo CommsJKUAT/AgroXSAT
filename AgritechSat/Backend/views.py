@@ -41,7 +41,7 @@ def register(request):
         username = data['username']
         email = data['email']
         password = data['password']
-        
+        print(data)
         
         
 
