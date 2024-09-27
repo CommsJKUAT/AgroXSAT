@@ -40,7 +40,16 @@ function Register() {
         alert("Registration successful");
       } else {
         // Handle errors returned from the backend
-        setErrorMessage(result.message || "Registration failed");
+        if (result.error) {
+          // If backend sends a specific error message
+          setErrorMessage(result.error);
+        } else if (result.message) {
+          // If the message field exists
+          setErrorMessage(result.message);
+        } else {
+          // Generic error message
+          setErrorMessage("Registration failed. Please try again.");
+        }
       }
     } catch (error) {
       // Handle network or other errors
