@@ -43,7 +43,8 @@ def register(request):
         password = data['password']
         print(data)
         
-        
+        if User.objects.filter(username=username).exists():
+            return Response({"detail": "User with this user already exists. Log in"}, status=status.HTTP_400_BAD_REQUEST)
 
         if User.objects.filter(email=email).exists():
             return Response({"detail": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)

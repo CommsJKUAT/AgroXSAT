@@ -24,38 +24,38 @@ function Register() {
       password,
     };
 
-    try {
-      const response = await fetch('https://agroxsat.onrender.com/backend/register/', {
+    
+    const response = await fetch('https://agroxsat.onrender.com/backend/register/', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      });
-      console.log(data);
-      const result = await response.json();
-
-      if (response.ok) {
+    });
+    
+    // Log the raw response and its status
+    console.log("Response Status:", response.status);
+    const result = await response.json();
+    console.log("Response Body:", result); // Log the full response
+    
+    if (response.ok) {
         // Handle successful registration
         alert("Registration successful");
-      } else {
+    } else {
         // Handle errors returned from the backend
         if (result.error) {
-          // If backend sends a specific error message
-          setErrorMessage(result.error);
+            setErrorMessage(result.error);
         } else if (result.message) {
-          // If the message field exists
-          setErrorMessage(result.message);
+            setErrorMessage(result.message);
+        } else if (result.detail) {
+            // Add a check for 'detail' if it exists
+            setErrorMessage(result.detail);
         } else {
-          // Generic error message
-          setErrorMessage("Registration failed. Please try again.");
+            // Generic error message
+            setErrorMessage("Registration failed. Please try again.");
         }
-      }
-    } catch (error) {
-      // Handle network or other errors
-      console.error("Error:", error);
-      setErrorMessage("An error occurred during registration");
     }
+    
   };
 
   return (
