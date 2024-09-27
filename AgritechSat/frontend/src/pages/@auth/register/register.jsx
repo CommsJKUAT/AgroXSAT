@@ -63,7 +63,7 @@ function Register() {
   };
 
   return (
-    <section className="relative bg-olive h-screen md:h-fit 2xl:h-screen bg-hero-pattern bg-no-repeat bg-cover">
+    <section className="relative bg-olive h-fit 2xl:h-screen bg-hero-pattern bg-no-repeat bg-cover">
       <Nav />
       <div className="px-8 md:px-0 pb-8 flex flex-col justify-center items-center h-full">
         <div className="w-full md:w-1/3 2xl:w-1/4">
