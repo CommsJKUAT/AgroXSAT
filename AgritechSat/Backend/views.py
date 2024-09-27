@@ -72,8 +72,8 @@ def login(request):
             'refresh': str(refresh),
             'access': str(access),
             'user': {
-                'username': user.username,
-                'email': user.email
+                'email': user.email,
+                'password': user.password
             }
         }, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
