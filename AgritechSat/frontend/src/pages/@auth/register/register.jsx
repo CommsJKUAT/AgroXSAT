@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import Nav from "../nav";
 import { useNavigate } from 'react-router-dom';
 
 function Register() {
+<<<<<<< Updated upstream
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+=======
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+>>>>>>> Stashed changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setErrorMessage('');
+    setErrorMessage("");
 
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
@@ -26,6 +34,7 @@ function Register() {
       password,
     };
 
+<<<<<<< Updated upstream
     
     const response = await fetch('https://agroxsat.onrender.com/backend/register/', {
         method: 'POST',
@@ -42,6 +51,24 @@ function Register() {
     
     if (response.ok) {
         
+=======
+    try {
+      const response = await fetch(
+        "https://agroxsat.onrender.com/backend/register/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Handle successful registration
+>>>>>>> Stashed changes
         alert("Registration successful");
         navigate('/login');
     } else {
@@ -62,17 +89,20 @@ function Register() {
   };
 
   return (
-    <section className="relative bg-olive 2xl:h-screen bg-hero-pattern bg-no-repeat bg-cover">
+    <section className="relative bg-olive h-screen md:h-fit 2xl:h-screen bg-hero-pattern bg-no-repeat bg-cover">
       <Nav />
-      <div className="pb-8 flex flex-col justify-center items-center h-full">
-        <div className="w-1/3 2xl:w-1/4">
+      <div className="px-8 md:px-0 pb-8 flex flex-col justify-center items-center h-full">
+        <div className="w-full md:w-1/3 2xl:w-1/4">
           <h1 className="text-4xl 2xl:text-5xl mb-2 2xl:mb-14 font-semibold text-left text-white">
             Sign Up
           </h1>
         </div>
-        <form className="w-1/3 2xl:w-1/4" onSubmit={handleSubmit}>
+        <form className="w-full md:w-1/3 2xl:w-1/4" onSubmit={handleSubmit}>
           <div className="my-5">
-            <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="username"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Username
             </label>
             <div className="relative">
@@ -81,14 +111,17 @@ function Register() {
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-white"
+                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-ash-gray"
                 placeholder="John Doe"
                 required
               />
             </div>
           </div>
           <div className="my-5">
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Your Email
             </label>
             <div className="relative">
@@ -97,14 +130,17 @@ function Register() {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-white"
+                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-ash-gray"
                 placeholder="johndoe@gmail.com"
                 required
               />
             </div>
           </div>
           <div className="my-5">
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-white">
+            <label
+              htmlFor="password"
+              className="block mb-2 text-sm font-medium text-white"
+            >
               Your password
             </label>
             <div className="relative">
@@ -113,14 +149,17 @@ function Register() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-white"
+                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5  placeholder-ash-gray"
                 placeholder="•••••••••"
                 required
               />
             </div>
           </div>
           <div className="my-5">
-            <label htmlFor="confirm-password" className="block mb-2 text-sm font-medium text-white">
+            <label
+              htmlFor="confirm-password"
+              className="block mb-2 text-sm font-medium text-white"
+            >
               Repeat password
             </label>
             <div className="relative">
@@ -129,7 +168,7 @@ function Register() {
                 id="confirm-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-white"
+                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-ash-gray"
                 placeholder="•••••••••"
                 required
               />
@@ -148,9 +187,20 @@ function Register() {
               type="button"
               className="my-4 text-black-olive bg-white focus:ring-4 focus:outline-none focus:ring-[#050708]/50 font-medium rounded-lg text-sm px-5 py-3.5 text-center inline-flex items-center justify-center"
             >
-              
-              <svg className="w-5 h-5 me-2 -ms-1" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="apple" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                <path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.3-3.7 52.4-17.5 67.7-34.3z" />
+              <svg
+                className="w-5 h-5 me-2 -ms-1"
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="fab"
+                data-icon="apple"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 384 512"
+              >
+                <path
+                  fill="currentColor"
+                  d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.3-3.7 52.4-17.5 67.7-34.3z"
+                />
               </svg>
               Continue with Apple
             </button>

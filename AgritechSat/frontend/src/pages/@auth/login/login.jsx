@@ -3,27 +3,30 @@ import Nav from "../nav";
 function Login() {
   return (
     <section className="relative bg-olive 2xl:h-screen bg-hero-pattern bg-no-repeat bg-cover">
-      <Nav/>
-      <div className="pb-8 flex flex-col justify-center items-center h-full">
-        <div className="w-1/3 2xl:w-1/4">
-        <h1 className="text-5xl mb-14 font-semibold text-left text-white">Sign In</h1></div>
-        <form className=" w-1/3 2xl:w-1/4 ">
+      <Nav />
+      <div className=" px-8 md:px-0 pb-8 flex flex-col justify-center items-center h-full">
+        <div className="w-full md:w-1/3 2xl:w-1/4">
+          <h1 className="text-5xl mb-14 font-semibold text-left text-white">
+            Sign In
+          </h1>
+        </div>
+        <form className="w-full md:w-1/3 2xl:w-1/4 ">
           <label
-            for="email-address-icon"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            htmlFor="username-icon"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Your Email
+            Your Username
           </label>
-          <div class="relative">
+          <div className="relative">
             <input
               type="text"
-              id="email-address-icon"
-              className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-white"
-              placeholder="johndoe@gmail.com"
+              id="username-icon"
+              className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-ash-gray"
+              placeholder="johndoe"
             />
-            <div class="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none">
+            <div className="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none">
               <svg
-                class="w-5 h-5 text-gray-800 dark:text-white"
+                class="w-6 h-6 text-gray-800 dark:text-white"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -31,8 +34,11 @@ function Login() {
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path d="M2.038 5.61A2.01 2.01 0 0 0 2 6v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6c0-.12-.01-.238-.03-.352l-.866.65-7.89 6.032a2 2 0 0 1-2.429 0L2.884 6.288l-.846-.677Z" />
-                <path d="M20.677 4.117A1.996 1.996 0 0 0 20 4H4c-.225 0-.44.037-.642.105l.758.607L12 10.742 19.9 4.7l.777-.583Z" />
+                <path
+                  fill-rule="evenodd"
+                  d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                  clip-rule="evenodd"
+                />
               </svg>
             </div>
           </div>
@@ -47,7 +53,7 @@ function Login() {
               <input
                 type="password"
                 id="password"
-                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-white"
+                className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-ash-gray"
                 placeholder="•••••••••"
                 required
               />
@@ -72,21 +78,24 @@ function Login() {
           </div>
           <div class="flex items-start mb-5">
             <div className="flex items-center justify-between h-5 w-full">
-              <div  className="flex items-center "><input
-                id="remember"
-                type="checkbox"
-                className="w-4 h-4 text-earth bg-earth border-earth rounded focus:ring-earth dark:focus:ring-earth"
-                required
-              />
-              <label
-              for="remember"
-              className="ms-2 text-sm font-medium text-white"
-            >
-              Remember me
-            </label></div>
-            <a href="/" className="text-sm font-medium text-white">Forgot Password?</a>
+              <div className="flex items-center ">
+                <input
+                  id="remember"
+                  type="checkbox"
+                  className="w-4 h-4 text-earth bg-earth border-earth rounded focus:ring-earth dark:focus:ring-earth"
+                  required
+                />
+                <label
+                  for="remember"
+                  className="ms-2 text-sm font-medium text-white"
+                >
+                  Remember me
+                </label>
+              </div>
+              <a href="/" className="text-sm font-medium text-white">
+                Forgot Password?
+              </a>
             </div>
-            
           </div>
           <button
             type="submit"
@@ -150,10 +159,14 @@ function Login() {
               Sign in with Google
             </button>
           </div>
-        <p className="font-medium text-white">Don't have an account? <a href="/" className=" text-black-olive font-bold">Sign Up</a></p>
+          <p className="font-medium text-white">
+            Don't have an account?{" "}
+            <a href="/" className=" text-black-olive font-bold">
+              Sign Up
+            </a>
+          </p>
         </form>
       </div>
-
     </section>
   );
 }
