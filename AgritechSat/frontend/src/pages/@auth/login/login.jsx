@@ -13,7 +13,7 @@ function Login() {
         <form className="w-full md:w-1/3 2xl:w-1/4 ">
           <label
             htmlFor="username-icon"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-white"
           >
             Your Username
           </label>
