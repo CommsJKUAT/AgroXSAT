@@ -33,10 +33,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @permission_classes([AllowAny])
 def register(request):
     
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     try:
         data = request.data
         username = data['username']
@@ -59,10 +55,6 @@ def register(request):
         return Response({"detail": "User created successfully!"}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
