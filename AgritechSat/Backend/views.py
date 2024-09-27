@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth import login, authenticate
-from .forms import CustomUserCreationForm
+
 from django.shortcuts import render
 from .models import SensorData
 from .forms import CoordinateForm
