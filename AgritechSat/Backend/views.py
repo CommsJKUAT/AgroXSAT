@@ -17,22 +17,27 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 
+def sensor_data_view(request):
+    sensor_data = SensorData.objects.all()  # Fetch all records from the database
+    return render(request, 'sensor_data.html', {'sensor_data': sensor_data})
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
+def calculate_distance(request):
+    distance = None
+    if request.method == 'POST':
+        form = CoordinateForm(request.POST)
+        if form.is_valid():
+            lat1 = form.cleaned_data['latitude']
+            lon1 = form.cleaned_data['longitude']
+            lat2 = -1.093164
+            lon2 = 37.017282
+            
+            coords_1 = (lat1, lon1)
+            coords_2 = (lat2, lon2)
+            distance = geodesic(coords_1, coords_2).kilometers
+    else:
+        form = CoordinateForm()
 
-        # Add custom claims
-        token['username'] = user.username
-        # ...
-
-        return token
-
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
-
+    return render(request, 'calculate_distance.html', {'form': form, 'distance': distance})
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
@@ -60,43 +65,35 @@ def register(request):
     except Exception as e:
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-    serializer = MyTokenObtainPairSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.user
-        token = MyTokenObtainPairSerializer.get_token(user)
-        refresh = token['refresh']
-        access = token['access']
-        return Response({
-            'refresh': str(refresh),
-            'access': str(access),
-            'user': {
-                'username': user.username,
-                'password': user.password
-            }
-        }, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        data = request.data
+        username = data.get('username')
+        password = data.get('password')
+        
+        # Authenticate user
+        user = authenticate(username=username, password=password)
+        
+        if user is not None:
+            # Generate refresh and access tokens
+            refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
 
-def sensor_data_view(request):
-    sensor_data = SensorData.objects.all()  # Fetch all records from the database
-    return render(request, 'sensor_data.html', {'sensor_data': sensor_data})
+            return Response({
+                'refresh': str(refresh),
+                'access': str(access),
+                'user': {
+                    'username': user.username,
+                    'email': user.email,
+                }
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-def calculate_distance(request):
-    distance = None
-    if request.method == 'POST':
-        form = CoordinateForm(request.POST)
-        if form.is_valid():
-            lat1 = form.cleaned_data['latitude']
-            lon1 = form.cleaned_data['longitude']
-            lat2 = -1.093164
-            lon2 = 37.017282
-            
-            coords_1 = (lat1, lon1)
-            coords_2 = (lat2, lon2)
-            distance = geodesic(coords_1, coords_2).kilometers
-    else:
-        form = CoordinateForm()
-
-    return render(request, 'calculate_distance.html', {'form': form, 'distance': distance})
