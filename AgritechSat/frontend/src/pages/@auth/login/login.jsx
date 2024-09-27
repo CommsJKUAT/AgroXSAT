@@ -1,6 +1,66 @@
 import Nav from "../nav";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Login() {
+const Login = () => {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log('Form Submitted');
+
+        try {
+            console.log('Sending Request');
+            const response = await fetch('https://agroxsat.onrender.com/backend/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password
+                })
+            });
+
+            console.log('Response Status:', response.status);
+
+            const contentType = response.headers.get('Content-Type');
+            const responseBody = await response.text();
+
+            if (response.ok) {
+                const { access, refresh } = JSON.parse(responseBody);
+                localStorage.setItem('accessToken', access);
+                localStorage.setItem('refreshToken', refresh);
+                navigate('/home'); // Redirect to homepage
+            } else {
+                let errorMessage = 'Error logging in';
+
+                if (contentType && contentType.includes('application/json')) {
+                    const result = JSON.parse(responseBody);
+                    errorMessage = result.error || errorMessage;
+                }
+
+                setError(errorMessage);
+            }
+        } catch (err) {
+            console.error('Fetch Error:', err);
+            setError('Error logging in');
+        }
+    };
   return (
     <section className="relative bg-olive 2xl:h-screen bg-hero-pattern bg-no-repeat bg-cover">
       <Nav />
