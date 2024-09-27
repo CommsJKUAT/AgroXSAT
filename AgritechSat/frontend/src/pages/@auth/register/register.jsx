@@ -41,7 +41,7 @@ function Register() {
     console.log("Response Body:", result); // Log the full response
     
     if (response.ok) {
-        // Handle successful registration
+        
         alert("Registration successful");
         navigate('/login');
     } else {
@@ -51,10 +51,10 @@ function Register() {
         } else if (result.message) {
             setErrorMessage(result.message);
         } else if (result.detail) {
-            // Add a check for 'detail' if it exists
+           
             setErrorMessage(result.detail);
         } else {
-            // Generic error message
+            
             setErrorMessage("Registration failed. Please try again.");
         }
     }
