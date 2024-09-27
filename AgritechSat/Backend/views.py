@@ -12,6 +12,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from rest_framework import status
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -20,7 +24,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        token['email'] = user.email
+        token['username'] = user.username
         # ...
 
         return token
@@ -69,7 +73,7 @@ def login(request):
             'refresh': str(refresh),
             'access': str(access),
             'user': {
-                'email': user.email,
+                'username': user.username,
                 'password': user.password
             }
         }, status=status.HTTP_200_OK)
