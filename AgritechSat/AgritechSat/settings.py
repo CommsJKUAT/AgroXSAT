@@ -126,7 +126,6 @@ DATABASES = {
 }
 DATABASES['default'] = dj_database_url.parse(os.getenv("DATABASECREDS"))
 #AUTH_USER_MODEL = 'Backend.CustomUser'
-AUTH_USER_MODEL = 'auth.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -165,5 +164,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "https://agroxsatsite.onrender.com",
+    'https://agroxsatsite.onrender.com',
+    'http://localhost:5173/',
+   
 ]

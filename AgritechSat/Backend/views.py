@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth import login, authenticate
-#from .forms import CustomUserCreationForm
+
 from django.shortcuts import render
 from .models import SensorData
 from .forms import CoordinateForm
@@ -12,11 +12,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated,AllowAny
-from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.response import Response
-from django.contrib.auth.hashers import make_password
-from .serializers import UserRegistrationSerializer
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -24,7 +20,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        token['username'] = user.username
+        token['email'] = user.email
         # ...
 
         return token
@@ -36,9 +32,26 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-    serializer = UserRegistrationSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()  # Save the user if the data is valid
+    
+    try:
+        data = request.data
+        username = data['username']
+        email = data['email']
+        password = data['password']
+        print(data)
+        
+        if User.objects.filter(username=username).exists():
+            return Response({"detail": "User already exists. Log in"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(email=email).exists():
+            return Response({"detail": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create(
+            username=username,
+            email=email,
+            password=make_password(password),
+        )
+        user.save()
         return Response({"detail": "User created successfully!"}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -55,8 +68,8 @@ def login(request):
             'refresh': str(refresh),
             'access': str(access),
             'user': {
-                'username': user.username,
-                'email': user.email
+                'email': user.email,
+                'password': user.password
             }
         }, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
