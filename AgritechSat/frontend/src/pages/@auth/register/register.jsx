@@ -1,22 +1,14 @@
 import React, { useState } from "react";
 import Nav from "../nav";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function Register() {
-<<<<<<< Updated upstream
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-=======
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
->>>>>>> Stashed changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,24 +26,6 @@ function Register() {
       password,
     };
 
-<<<<<<< Updated upstream
-    
-    const response = await fetch('https://agroxsat.onrender.com/backend/register/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    });
-    
-    // Log the raw response and its status
-    console.log("Response Status:", response.status);
-    const result = await response.json();
-    console.log("Response Body:", result); // Log the full response
-    
-    if (response.ok) {
-        
-=======
     try {
       const response = await fetch(
         "https://agroxsat.onrender.com/backend/register/",
@@ -65,27 +39,27 @@ function Register() {
       );
 
       const result = await response.json();
+      console.log("Response Status:", response.status);
+      console.log("Response Body:", result); // Log the full response
 
       if (response.ok) {
-        // Handle successful registration
->>>>>>> Stashed changes
         alert("Registration successful");
-        navigate('/login');
-    } else {
+        navigate("/login");
+      } else {
         // Handle errors returned from the backend
         if (result.error) {
-            setErrorMessage(result.error);
+          setErrorMessage(result.error);
         } else if (result.message) {
-            setErrorMessage(result.message);
+          setErrorMessage(result.message);
         } else if (result.detail) {
-           
-            setErrorMessage(result.detail);
+          setErrorMessage(result.detail);
         } else {
-            
-            setErrorMessage("Registration failed. Please try again.");
+          setErrorMessage("Registration failed. Please try again.");
         }
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred. Please try again.");
     }
-    
   };
 
   return (

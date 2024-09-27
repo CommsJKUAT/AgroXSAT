@@ -22,7 +22,7 @@ function Login() {
               type="text"
               id="username-icon"
               className="text-white bg-black-olive text-sm rounded-lg focus:ring-black-olive focus:border-black-olive block w-full ps-2.5 p-3.5 placeholder-ash-gray"
-              placeholder="johndoe"
+              placeholder="John Doe"
             />
             <div className="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none">
               <svg
