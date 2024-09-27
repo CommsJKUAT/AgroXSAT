@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Nav from "../nav";
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,6 +43,7 @@ function Register() {
     if (response.ok) {
         // Handle successful registration
         alert("Registration successful");
+        navigate('/login');
     } else {
         // Handle errors returned from the backend
         if (result.error) {
