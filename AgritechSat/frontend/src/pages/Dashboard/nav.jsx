@@ -121,7 +121,7 @@ const DashboardNav = () => {
                 className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
                   location.pathname === "/dashboard"
                     ? "bg-olive/50 rounded-full"
-                    : ""
+                    : "opacity-50"
                 }`}
               >
                 <NavLink
@@ -137,7 +137,7 @@ const DashboardNav = () => {
                 className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
                   location.pathname === "/gallery"
                     ? "bg-olive/50 rounded-full"
-                    : ""
+                    : "opacity-50"
                 }`}
               >
                 <NavLink
@@ -153,7 +153,7 @@ const DashboardNav = () => {
                 className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
                   location.pathname === "/sensors"
                     ? "bg-olive/50 rounded-full"
-                    : ""
+                    : "opacity-50"
                 }`}
               >
                 <NavLink
@@ -169,7 +169,7 @@ const DashboardNav = () => {
                 className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
                   location.pathname === "/telemetry"
                     ? "bg-olive/50 rounded-full"
-                    : ""
+                    : "opacity-50"
                 }`}
               >
                 <NavLink
@@ -185,7 +185,7 @@ const DashboardNav = () => {
                 className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
                   location.pathname === "/commands"
                     ? "bg-olive/50 rounded-full"
-                    : ""
+                    : "opacity-50"
                 }`}
               >
                 <NavLink
