@@ -10,8 +10,8 @@ const DashboardNav = () => {
   }, []);
 
   return (
-    <nav className="bg-black-olive border-gray-200 dark:bg-gray-900">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-3">
+    <nav className="fixed top-0 z-50 w-full bg-black-olive border-gray-200 dark:bg-gray-900">
+      <div className="max-w-full flex flex-wrap items-center justify-between mx-auto py-3 px-10">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img
             src="/satlogo1.jpeg"
