@@ -12,9 +12,11 @@
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",
     "appwrite": "^15.0.0",
+    "chart.js": "^4.4.4",
     "flowbite": "^2.5.2",
     "flowbite-react": "^0.10.1",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"
   },
