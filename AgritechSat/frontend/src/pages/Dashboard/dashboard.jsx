@@ -79,7 +79,7 @@ const Dashboard = () => {
                 class="flex items-center text-blue-500 p-2 rounded-lg group"
               >
                 <svg
-                  class="w-5 h-5 text-blue-500 transition duration-75  group-hover:text-gray-900 "
+                  class="w-5 h-5 text-blue-500 transition duration-75   "
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
