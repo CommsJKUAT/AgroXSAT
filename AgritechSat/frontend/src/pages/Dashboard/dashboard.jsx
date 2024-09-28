@@ -123,7 +123,7 @@ const Dashboard = () => {
 
                 <div className="flex flex-col border-b w-full border-b-olive/50 py-2">
                   <span class="ms-3 font-medium">Precipitation</span>
-                  <span class="ms-3 text-sm text-olive">20°F</span>
+                  <span class="ms-3 text-sm text-olive">48%</span>
                 </div>
               </a>
             </li>
