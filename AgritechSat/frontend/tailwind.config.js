@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+const flowbite = require("flowbite-react/tailwind");
 module.exports = {
-  content: ["./src/**/*.{html,js,jsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/flowbite/**/*.js",
+    flowbite.content(),
+  ],
   theme: {
     colors: {
       "ash-gray": "#A9B0A2",
@@ -15,5 +21,5 @@ module.exports = {
       "hero-pattern": "url('/bg/contour.svg')",
     },
   },
-  plugins: [],
+  plugins: [require("flowbite/plugin"), flowbite.plugin()],
 };
