@@ -52,7 +52,7 @@ const Dashboard = () => {
                 class="flex items-center text-white p-2 rounded-lg group"
               >
                 <svg
-                  class="w-6 h-6 text-white"
+                  class="w-6 h-6 text-giants-orange"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -76,10 +76,10 @@ const Dashboard = () => {
             <li className="bg-transparent">
               <a
                 href="#"
-                class="flex items-center text-white p-2 rounded-lg group"
+                class="flex items-center text-blue-500 p-2 rounded-lg group"
               >
                 <svg
-                  class="w-5 h-5 text-white transition duration-75  group-hover:text-gray-900 "
+                  class="w-5 h-5 text-blue-500 transition duration-75  group-hover:text-gray-900 "
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -97,10 +97,10 @@ const Dashboard = () => {
             <li className="bg-transparent">
               <a
                 href="#"
-                class="flex items-center text-white p-2 rounded-lg group"
+                class="flex items-center text-yellow-300 p-2 rounded-lg group"
               >
                 <svg
-                  class="w-6 h-6 text-white"
+                  class="w-6 h-6 text-yellow-300"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
