@@ -4,24 +4,43 @@ import DashboardNav from "../../../@Dashboard/nav";
 const Commands = () => {
   const [commands, setCommands] = useState([]);
   const [customCommand, setCustomCommand] = useState("");
-
-  // Reference to the last message element
+  const [searchQuery, setSearchQuery] = useState("");
+  const [highlightedIndices, setHighlightedIndices] = useState([]); // Track all indices of highlighted commands
+  const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0); // Track the current highlight index
   const lastCommandRef = useRef(null);
+  const commandRefs = useRef([]);
 
-  // Sample command history to pre-populate (you can replace this with real data later)
   useEffect(() => {
     const sampleHistory = [
       {
         text: "Capture Image",
         time: new Date().toLocaleTimeString(),
         type: "sent",
-        status: "pending", // New status field
+        status: "pending",
       },
       {
         text: "Adjust Orbit",
         time: new Date().toLocaleTimeString(),
         type: "sent",
-        status: "pending", // New status field
+        status: "pending",
+      },
+      {
+        text: "Adjust Orbit",
+        time: new Date().toLocaleTimeString(),
+        type: "sent",
+        status: "pending",
+      },
+      {
+        text: "Activate Sensor",
+        time: new Date().toLocaleTimeString(),
+        type: "sent",
+        status: "pending",
+      },
+      {
+        text: "Deactivate Camera",
+        time: new Date().toLocaleTimeString(),
+        type: "sent",
+        status: "pending",
       },
     ];
     setCommands(sampleHistory);
@@ -32,15 +51,13 @@ const Commands = () => {
       text: command,
       time: new Date().toLocaleTimeString(),
       type: "sent",
-      status: "pending", // Start with a single tick (pending)
+      status: "pending",
     };
 
-    // Add the new command to the list
-    setCommands((prevCommands) => [...prevCommands, newCommand]);
+    setCommands([...commands, newCommand]);
 
-    // Simulate successful execution after 2 seconds
     setTimeout(() => {
-      updateCommandStatus(newCommand.text, "success"); // Update to success (double tick)
+      updateCommandStatus(newCommand.text, "success");
     }, 2000);
   };
 
@@ -60,7 +77,33 @@ const Commands = () => {
     }
   };
 
-  // Scroll to the last command when a new command is added
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const newHighlightedIndices = commands
+      .map((cmd, index) =>
+        cmd.text.toLowerCase().includes(searchQuery.toLowerCase()) ? index : -1
+      )
+      .filter((index) => index !== -1)
+      .reverse(); // Reverse the order to get latest first
+
+    setHighlightedIndices(newHighlightedIndices);
+    setCurrentHighlightIndex(0);
+
+    if (newHighlightedIndices.length > 0) {
+      const indexToScroll = newHighlightedIndices[0];
+      commandRefs.current[indexToScroll].scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleNextHighlight = () => {
+    if (highlightedIndices.length > 0) {
+      const nextIndex = (currentHighlightIndex + 1) % highlightedIndices.length; // Cycle through indices
+      setCurrentHighlightIndex(nextIndex);
+      const indexToScroll = highlightedIndices[nextIndex];
+      commandRefs.current[indexToScroll].scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
     if (lastCommandRef.current) {
       lastCommandRef.current.scrollIntoView({ behavior: "smooth" });
@@ -79,6 +122,25 @@ const Commands = () => {
             </h2>
           </div>
 
+          {/* Search Bar */}
+          <div className="p-4 border-b bg-gray-50">
+            <form onSubmit={handleSearch} className="flex space-x-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search command"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring focus:ring-blue-300"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-black-olive text-white rounded-full hover:bg-olive"
+              >
+                Search
+              </button>
+            </form>
+          </div>
+
           {/* Scrollable Chat History */}
           <div
             className="flex-1 overflow-y-auto p-4 bg-gray-50"
@@ -88,6 +150,7 @@ const Commands = () => {
               {commands.map((cmd, index) => (
                 <li
                   key={index}
+                  ref={(el) => (commandRefs.current[index] = el)}
                   className={`flex ${
                     cmd.type === "sent" ? "justify-end" : "justify-start"
                   }`}
@@ -97,6 +160,12 @@ const Commands = () => {
                       cmd.type === "sent"
                         ? "bg-black-olive text-white"
                         : "bg-gray-200 text-gray-900"
+                    } ${
+                      highlightedIndices.includes(index) &&
+                      currentHighlightIndex ===
+                        highlightedIndices.indexOf(index)
+                        ? "ring-4 ring-blue-300" // Highlight the current command
+                        : ""
                     }`}
                   >
                     <div className="text-sm">{cmd.text}</div>
@@ -104,7 +173,6 @@ const Commands = () => {
                       <div className="text-xs text-gray-200 mt-1">
                         {cmd.time}
                       </div>
-                      {/* Show ticks based on status */}
                       <div className="ml-2 text-xs text-gray-400">
                         {cmd.status === "pending" ? (
                           <span>✓</span> // Single tick
@@ -116,10 +184,21 @@ const Commands = () => {
                   </div>
                 </li>
               ))}
-              {/* Invisible div to scroll to */}
               <div ref={lastCommandRef}></div>
             </ul>
           </div>
+
+          {/* Highlight Next Button */}
+          {highlightedIndices.length > 1 && (
+            <div className="p-4 border-t bg-white">
+              <button
+                onClick={handleNextHighlight}
+                className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+              >
+                Next Occurrence
+              </button>
+            </div>
+          )}
 
           {/* Fixed Predefined Command Buttons */}
           <div className="p-4 flex flex-col space-y-3 bg-white border-t">
@@ -155,7 +234,7 @@ const Commands = () => {
                 value={customCommand}
                 onChange={(e) => setCustomCommand(e.target.value)}
                 placeholder="Enter command"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring focus:ring-blue-300"
               />
               <button
                 type="submit"
