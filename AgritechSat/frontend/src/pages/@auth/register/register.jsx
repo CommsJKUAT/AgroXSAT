@@ -67,7 +67,7 @@ function Register() {
       <Nav />
       <div className="px-8 md:px-0 pb-8 flex flex-col justify-center items-center h-full">
         <div className="w-full md:w-1/3 2xl:w-1/4">
-          <h1 className="text-4xl 2xl:text-5xl mb-2 2xl:mb-14 font-semibold text-left text-white">
+          <h1 className="text-4xl 2xl:text-4xl mb-2 2xl:mb-14 font-semibold text-left text-white">
             Sign Up
           </h1>
         </div>
