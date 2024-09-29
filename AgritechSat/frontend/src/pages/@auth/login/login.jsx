@@ -38,7 +38,7 @@ const Login = () => {
                 const { access, refresh } = JSON.parse(responseBody);
                 localStorage.setItem('accessToken', access);
                 localStorage.setItem('refreshToken', refresh);
-                navigate('/home'); // Redirect to homepage
+                navigate('/dashboard'); // Redirect to homepage
             } else {
                 let errorMessage = 'Error logging in';
                 if (contentType && contentType.includes('application/json')) {
