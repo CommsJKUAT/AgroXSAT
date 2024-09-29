@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/@auth/login/login";
 import Register from "./pages/@auth/register/register";
-import Dashboard from "./pages/Dashboard/dashboard";
+import Dashboard from "./pages/@Dashboard/dashboard";
 import Commands from "./pages/@Dashboard/pages/commands/console";
 import Telemetry from "./pages/@Dashboard/pages/telemetry/telemetry";
 import Sensors from "./pages/@Dashboard/pages/sensors/sensors";

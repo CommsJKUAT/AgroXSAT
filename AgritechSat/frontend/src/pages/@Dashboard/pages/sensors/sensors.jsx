@@ -1,4 +1,4 @@
-import DashboardNav from "../../../Dashboard/nav";
+import DashboardNav from "../../../@Dashboard/nav";
 
 const Sensors = () => {
   return (

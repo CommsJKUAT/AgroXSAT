@@ -2,7 +2,7 @@ import Nav from "../nav";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUser, loginWithGoogle } from "../OAuth/Auth";
-import Dashboard from "../../Dashboard/dashboard";
+import Dashboard from "../../@Dashboard/dashboard";
 
 const Login = () => {
   const [user, setUser] = useState(null);
