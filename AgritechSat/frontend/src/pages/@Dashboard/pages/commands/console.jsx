@@ -15,21 +15,13 @@ const Commands = () => {
         text: "Capture Image",
         time: new Date().toLocaleTimeString(),
         type: "sent",
+        status: "pending", // New status field
       },
       {
         text: "Adjust Orbit",
         time: new Date().toLocaleTimeString(),
         type: "sent",
-      },
-      {
-        text: "Activate Sensor",
-        time: new Date().toLocaleTimeString(),
-        type: "sent",
-      },
-      {
-        text: "Deactivate Camera",
-        time: new Date().toLocaleTimeString(),
-        type: "sent",
+        status: "pending", // New status field
       },
     ];
     setCommands(sampleHistory);
@@ -40,8 +32,24 @@ const Commands = () => {
       text: command,
       time: new Date().toLocaleTimeString(),
       type: "sent",
+      status: "pending", // Start with a single tick (pending)
     };
-    setCommands([...commands, newCommand]);
+
+    // Add the new command to the list
+    setCommands((prevCommands) => [...prevCommands, newCommand]);
+
+    // Simulate successful execution after 2 seconds
+    setTimeout(() => {
+      updateCommandStatus(newCommand.text, "success"); // Update to success (double tick)
+    }, 2000);
+  };
+
+  const updateCommandStatus = (text, newStatus) => {
+    setCommands((prevCommands) =>
+      prevCommands.map((cmd) =>
+        cmd.text === text ? { ...cmd, status: newStatus } : cmd
+      )
+    );
   };
 
   const handleCustomCommand = (e) => {
@@ -87,12 +95,24 @@ const Commands = () => {
                   <div
                     className={`max-w-xs px-4 py-2 rounded-lg shadow-md ${
                       cmd.type === "sent"
-                        ? "bg-blue-500 text-white"
+                        ? "bg-black-olive text-white"
                         : "bg-gray-200 text-gray-900"
                     }`}
                   >
                     <div className="text-sm">{cmd.text}</div>
-                    <div className="text-xs text-gray-200 mt-1">{cmd.time}</div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-gray-200 mt-1">
+                        {cmd.time}
+                      </div>
+                      {/* Show ticks based on status */}
+                      <div className="ml-2 text-xs text-gray-400">
+                        {cmd.status === "pending" ? (
+                          <span>✓</span> // Single tick
+                        ) : (
+                          <span>✓✓</span> // Double tick on success
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </li>
               ))}
@@ -105,7 +125,7 @@ const Commands = () => {
           <div className="p-4 flex flex-col space-y-3 bg-white border-t">
             <button
               onClick={() => sendCommand("Capture Image")}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 w-full text-left"
+              className="px-4 py-2 bg-black-olive text-white rounded-lg shadow-md hover:bg-olive w-full text-left"
             >
               <div className="flex justify-between">
                 <span>Capture Image</span>
@@ -116,7 +136,7 @@ const Commands = () => {
             </button>
             <button
               onClick={() => sendCommand("Adjust Orbit")}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 w-full text-left"
+              className="px-4 py-2 bg-giants-orange text-white rounded-lg shadow-md w-full text-left"
             >
               <div className="flex justify-between">
                 <span>Adjust Orbit</span>
@@ -135,11 +155,11 @@ const Commands = () => {
                 value={customCommand}
                 onChange={(e) => setCustomCommand(e.target.value)}
                 placeholder="Enter command"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring focus:ring-blue-300"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+                className="px-4 py-2 bg-black-olive text-white rounded-full hover:bg-olive"
               >
                 Send
               </button>
