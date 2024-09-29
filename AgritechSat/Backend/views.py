@@ -72,6 +72,7 @@ def register(request):
 def login(request):
     try:
         data = request.data
+        print(data)
         username = data.get('username')
         password = data.get('password')
         
