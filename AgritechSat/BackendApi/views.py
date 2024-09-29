@@ -13,7 +13,7 @@ from Backend.models import SensorData
 def homepage(request):
     return HttpResponse("Agrosat Backend Apis!")
 
-
+@permission_classes([AllowAny])
 class backendapires(APIView):
     def post(self, request, *args, **kwargs):
         try:
