@@ -78,7 +78,7 @@ class imagesapi(APIView):
 
             # Extract temperature and humidity
             image= data.get('temperature')
-            
+            print(image)
 
             # Simple validation check
             if image is None:
