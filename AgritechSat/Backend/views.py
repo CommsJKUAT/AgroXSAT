@@ -22,6 +22,10 @@ def sensor_data_view(request):
     sensor_data = SensorData.objects.all()  # Fetch all records from the database
     return render(request, 'sensor_data.html', {'sensor_data': sensor_data})
 
+def image_data_view(request):
+    image_data = Images.objects.all()  # Fetch all records from the database
+    return render(request, 'image_data.html', {'image_data': image_data})
+
 def calculate_distance(request):
     distance = None
     if request.method == 'POST':
