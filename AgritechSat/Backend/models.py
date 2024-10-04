@@ -18,3 +18,10 @@ class Coordinates(models.Model):
 
     def __str__(self):
         return f"Lat: {self.latitude}, Long: {self.longitude}"
+
+class Images(models.Model):
+    tempereture = models.TextField() 
+    
+
+    def __str__(self):
+        return f"Temp: {self.temperature}"

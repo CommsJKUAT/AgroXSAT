@@ -8,7 +8,7 @@ from .serializers import UserSerializer
 import json
 from rest_framework.views import APIView
 from Backend.models import SensorData
-from Backend.models import Coordinates
+from Backend.models import Coordinates,Images
 from django.views.decorators.csrf import csrf_exempt 
 
 
@@ -83,7 +83,11 @@ class imagesapi(APIView):
             # Simple validation check
             if image is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-
+            image_data = Images(
+                image=image
+                
+            )
+            image_data.save()
            
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         
