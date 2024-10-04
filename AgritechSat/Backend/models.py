@@ -20,7 +20,7 @@ class Coordinates(models.Model):
         return f"Lat: {self.latitude}, Long: {self.longitude}"
 
 class Images(models.Model):
-    tempereture = models.TextField()
+    temperature = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     
 

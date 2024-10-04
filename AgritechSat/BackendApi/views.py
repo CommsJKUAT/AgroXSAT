@@ -84,7 +84,8 @@ class imagesapi(APIView):
             if image is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             image_data = Images(
-                image=image
+                image=image,
+                timestamp=timestamp
                 
             )
             image_data.save()

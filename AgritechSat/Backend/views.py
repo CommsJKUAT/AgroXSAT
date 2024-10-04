@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 import json
 from django.shortcuts import render
-from .models import SensorData
+from .models import SensorData,Images
 from .forms import CoordinateForm
 from geopy.distance import geodesic
 from rest_framework_simplejwt.tokens import RefreshToken
