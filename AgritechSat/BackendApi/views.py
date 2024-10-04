@@ -83,9 +83,10 @@ class imagesapi(APIView):
             # Simple validation check
             if image is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
+            
             image_data = Images(
                 temperature=image,
-                timestamp=timestamp
+                
                 
             )
             image_data.save()
