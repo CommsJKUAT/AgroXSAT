@@ -8,7 +8,8 @@ from .serializers import UserSerializer
 import json
 from rest_framework.views import APIView
 from Backend.models import SensorData
-
+from Backend.models import Coordinates
+from django.views.decorators.csrf import csrf_exempt 
 
 
 def homepage(request):
@@ -90,7 +91,7 @@ class imagesapi(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-            
+
 @permission_classes([AllowAny])
 class locationapi(APIView):
     def post(self, request, *args, **kwargs):
@@ -131,3 +132,39 @@ class locationapi(APIView):
         
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@csrf_exempt
+def groundstationCoordinates(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+
+            # Update coordinates in the database
+            coords = Coordinates.objects.first()
+            if not coords:
+                coords = Coordinates(latitude=latitude, longitude=longitude)
+            else:
+                coords.latitude = latitude
+                coords.longitude = longitude
+            coords.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Coordinates updated'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+def get_gs(request):
+    coords = Coordinates.objects.first()
+    if coords:
+        return JsonResponse({
+            'latitude': coords.latitude,
+            'longitude': coords.longitude
+        })
+    else:
+        return JsonResponse({
+            'latitude': None,
+            'longitude': None
+        })

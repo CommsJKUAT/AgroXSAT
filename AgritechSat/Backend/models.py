@@ -10,3 +10,11 @@ class SensorData(models.Model):
 
     def __str__(self):
         return f"Temp: {self.temperature}, Humidity: {self.humidity}, Time: {self.timestamp}"
+
+class Coordinates(models.Model):
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Lat: {self.latitude}, Long: {self.longitude}"
