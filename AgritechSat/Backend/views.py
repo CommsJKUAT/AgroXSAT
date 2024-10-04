@@ -29,8 +29,8 @@ def calculate_distance(request):
         if form.is_valid():
             lat1 = form.cleaned_data['latitude']
             lon1 = form.cleaned_data['longitude']
-            lat2 = -1.093164
-            lon2 = 37.017282
+            lat2 =-1.1017657065964066
+            lon2 = 37.016449722103474
             
             coords_1 = (lat1, lon1)
             coords_2 = (lat2, lon2)
