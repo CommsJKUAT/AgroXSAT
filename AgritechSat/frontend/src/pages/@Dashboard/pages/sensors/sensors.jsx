@@ -9,7 +9,7 @@ const Sensors = () => {
   return (
     <>
       <DashboardNav />
-      <div className="max-w-screen-lg mx-auto grid grid-cols-1 sm:grid-cols-2 gap-x-10 p-4 pt-32">
+      <div className="max-w-screen-xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-x-20 p-4 pt-32">
         <SoilMoisture />
         <TemperatureHumidity />
         <SmokeSensor />
