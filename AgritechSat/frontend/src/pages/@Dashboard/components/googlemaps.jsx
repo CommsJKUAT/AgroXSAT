@@ -3,9 +3,16 @@ import axios from "axios";
 
 const GoogleMapComponent = () => {
   const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
+  const [map, setMap] = useState(null);
+  const [polygon, setPolygon] = useState(null);
+  const [polygonPath, setPolygonPath] = useState([]);
+
+  const customMarkerIcon = {
+    url: "/GSimage.jpg",
+    scaledSize: new window.google.maps.Size(50, 50),
+  };
 
   useEffect(() => {
-    // Fetch coordinates from your backend API
     const fetchCoordinates = async () => {
       try {
         const response = await axios.get("https://agroxsat.onrender.com/backendapi/mapgs/");
@@ -26,46 +33,56 @@ const GoogleMapComponent = () => {
   }, [coordinates]);
 
   const initMap = () => {
-    const map = new window.google.maps.Map(document.getElementById("map"), {
+    const mapInstance = new window.google.maps.Map(document.getElementById("map"), {
       center: { lat: coordinates.latitude, lng: coordinates.longitude },
       zoom: 13,
     });
 
-    const customMarkerIcon = {
-      url: "/GSimage.jpg",
-      scaledSize: new window.google.maps.Size(50, 50),
-    };
+    setMap(mapInstance);
 
-    const marker = new window.google.maps.Marker({
+    // Add a custom marker at the fetched coordinates
+    new window.google.maps.Marker({
       position: { lat: coordinates.latitude, lng: coordinates.longitude },
-      map: map,
+      map: mapInstance,
       icon: customMarkerIcon,
     });
 
-    // Create a circle with a 3km radius
-    const circle = new window.google.maps.Circle({
+    // Create a new polygon
+    const newPolygon = new window.google.maps.Polygon({
+      paths: [], // Start with an empty path
       strokeColor: "#FF0000",
       strokeOpacity: 0.8,
       strokeWeight: 2,
       fillColor: "#FF0000",
       fillOpacity: 0.35,
-      map: map,
-      center: { lat: coordinates.latitude, lng: coordinates.longitude },
-      radius: 1000, // Radius in meters (3 km)
+      map: mapInstance,
     });
 
-    const infoWindow = new window.google.maps.InfoWindow({
-      content: "<div style='color: black;'>The Ground Station</div>",
-    });
+    setPolygon(newPolygon);
 
-    // Show the InfoWindow on mouseover and hide it on mouseout
-    marker.addListener("mouseover", () => {
-      infoWindow.open(map, marker);
+    // Add click listener to the map to create the polygon
+    mapInstance.addListener("click", (event) => {
+      addLatLng(event.latLng);
     });
+  };
 
-    marker.addListener("mouseout", () => {
-      infoWindow.close();
-    });
+  const addLatLng = (latLng) => {
+    // Update polygon path with new point
+    const path = [...polygonPath, latLng];
+    setPolygonPath(path); // Update the state
+
+    // Check if the polygon exists
+    if (polygon) {
+      polygon.setPath(path); // Update existing polygon path
+    }
+  };
+
+  const clearPolygon = () => {
+    if (polygon) {
+      polygon.setMap(null); // Remove the polygon from the map
+    }
+    setPolygonPath([]); // Reset the polygon path
+    setPolygon(null); // Clear the polygon state
   };
 
   if (!coordinates.latitude || !coordinates.longitude) {
@@ -73,7 +90,10 @@ const GoogleMapComponent = () => {
   }
 
   return (
-    <div id="map" style={{ width: "100%", height: "100vh" }}></div>
+    <div>
+      <div id="map" style={{ width: "100%", height: "100vh" }}></div>
+      <button onClick={clearPolygon}>Clear Polygon</button>
+    </div>
   );
 };
 
