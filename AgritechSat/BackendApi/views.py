@@ -146,11 +146,13 @@ def groundstationCoordinates(request):
             data = json.loads(request.body)
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-
+            entry = GSCoordinates(value=data)
+            entry.coordinatesave()
+            
             # Update coordinates in the database
-            coords = Coordinates.objects.first()
+            coords = GSCoordinates.objects.first()
             if not coords:
-                coords = Coordinates(latitude=latitude, longitude=longitude)
+                coords = GSCoordinates(latitude=latitude, longitude=longitude)
             else:
                 coords.latitude = latitude
                 coords.longitude = longitude
@@ -163,7 +165,7 @@ def groundstationCoordinates(request):
 
 
 def get_gs(request):
-    coords = Coordinates.objects.first()
+    coords = GSCoordinates.objects.first()
     if coords:
         return JsonResponse({
             'latitude': coords.latitude,

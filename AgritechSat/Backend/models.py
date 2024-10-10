@@ -23,3 +23,17 @@ class Images(models.Model):
 
     def __str__(self):
         return f"Temp: {self.temperature}, Time: {self.timestamp}"
+    
+class GSCoordinates(models.Model):
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def coordinatesave(self, *args, **kwargs):
+        # Before saving a new value, delete the previous value
+        GSCoordinates.objects.all().delete()
+        # super(GSCoordinates, self).save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"Lat: {self.latitude}, Long: {self.longitude}"    
+    
