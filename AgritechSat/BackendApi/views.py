@@ -145,16 +145,28 @@ class groundstationCoordinates(APIView):
     def post(self, request, *args, **kwargs):
 
         try:
-            data = json.loads(request.body)
+            if isinstance(request.data, dict) and '_content' not in request.data:
+                data = request.data
+                print("Parsed as JSON:", data)
+            else:
+                # Convert QueryDict to a dictionary
+                data = dict(request.data)
+                print("QueryDict Data:", data)
+                
+                # Extract JSON content from '_content' key
+                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
+                print(data_json)
+                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
+                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
+                print("Extracted Data:", data)
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-            entry = GSCoordinates(value=data)
+            entry = GSCoordinates(data)
             entry.coordinatesave()
             
-            # Update coordinates in the database
-            coords = GSCoordinates.objects.first()
-            if not coords:
-                coords = GSCoordinates(latitude=latitude, longitude=longitude)
+            if latitude is None or longitude is None:
+                return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
+
             else:
                 coords.latitude = latitude
                 coords.longitude = longitude
