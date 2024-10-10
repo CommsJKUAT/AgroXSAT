@@ -139,7 +139,7 @@ class locationapi(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@csrf_exempt
+
 @permission_classes([AllowAny])
 def groundstationCoordinates(request):
     if request.method == 'POST':
