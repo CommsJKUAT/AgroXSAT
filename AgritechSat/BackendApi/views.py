@@ -159,6 +159,7 @@ class groundstationCoordinates(APIView):
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
                 print("Extracted Data:", data)
+                
             latitude = data.get('latitude')
             longitude = data.get('longitude')
             entry = GSCoordinates(data)
@@ -167,9 +168,11 @@ class groundstationCoordinates(APIView):
             if latitude is None or longitude is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-            else:
-                coords.latitude = latitude
-                coords.longitude = longitude
+            coords = GSCoordinates(
+                latitude=latitude,
+                longitude=longitude
+                
+            )
             coords.save()
 
             return JsonResponse({'status': 'success', 'message': 'Coordinates updated'})
