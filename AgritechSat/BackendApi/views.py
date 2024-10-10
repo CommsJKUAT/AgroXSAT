@@ -8,7 +8,7 @@ from .serializers import UserSerializer
 import json
 from rest_framework.views import APIView
 from Backend.models import SensorData
-from Backend.models import Coordinates,Images
+from Backend.models import GSCoordinates,Images
 from django.views.decorators.csrf import csrf_exempt 
 
 
