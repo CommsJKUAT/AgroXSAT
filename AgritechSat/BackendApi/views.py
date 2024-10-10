@@ -141,8 +141,9 @@ class locationapi(APIView):
 
 
 @permission_classes([AllowAny])
-def groundstationCoordinates(request):
-    if request.method == 'POST':
+class groundstationCoordinates(APIView):
+    def post(self, request, *args, **kwargs):
+
         try:
             data = json.loads(request.body)
             latitude = data.get('latitude')
@@ -162,7 +163,7 @@ def groundstationCoordinates(request):
             return JsonResponse({'status': 'success', 'message': 'Coordinates updated'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    
 
 
 def get_gs(request):
