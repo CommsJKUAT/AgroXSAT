@@ -77,7 +77,7 @@ class imagesapi(APIView):
                 print("Extracted Data:", data)
 
             # Extract temperature and humidity
-            image= data.get('temperature')
+            image= data.get('image')
             print(image)
 
             # Simple validation check
@@ -85,7 +85,7 @@ class imagesapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             image_data = Images(
-                temperature=image,
+                image=image,
                 
                 
             )

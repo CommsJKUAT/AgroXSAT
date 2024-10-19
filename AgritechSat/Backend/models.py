@@ -17,12 +17,12 @@ class Coordinates(models.Model):
         return f"Lat: {self.latitude}, Long: {self.longitude}"
 
 class Images(models.Model):
-    temperature = models.TextField()
+    image = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     
 
     def __str__(self):
-        return f"Temp: {self.temperature}, Time: {self.timestamp}"
+        return f"Temp: {self.image}, Time: {self.timestamp}"
     
 class GSCoordinates(models.Model):
     latitude = models.FloatField()
