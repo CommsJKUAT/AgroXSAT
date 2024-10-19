@@ -78,7 +78,8 @@ class imagesapi(APIView):
 
             # Extract temperature and humidity
             image= data.get('image')
-            print(image)
+            image_name = image.split('/')[0]
+            
 
             # Simple validation check
             if image is None:
@@ -86,12 +87,14 @@ class imagesapi(APIView):
             
             image_data = Images(
                 image=image,
+                image_name=image_name
+
                 
                 
             )
             image_data.save()
            
-            return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
+            return Response({"message": "Success", "data": image}, status=status.HTTP_200_OK)
         
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
