@@ -18,6 +18,7 @@ class Coordinates(models.Model):
 
 class Images(models.Model):
     image = models.TextField()
+    image_name = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     
 
