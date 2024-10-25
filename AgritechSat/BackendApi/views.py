@@ -76,7 +76,7 @@ class temperatureapi(APIView):
                 print("Extracted Data:", data)
 
             # Extract temperature and humidity
-            temperature= data.get('temperature')
+            temperature_data= data.get('temperature')
             print(temperature)
 
             # Simple validation check
@@ -84,7 +84,7 @@ class temperatureapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             temperature_data = temperature(
-                temperature=temperature
+                temperature=temperature_data
                 
                 
             )
