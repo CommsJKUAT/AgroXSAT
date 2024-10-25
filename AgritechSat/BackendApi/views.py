@@ -279,20 +279,19 @@ class locationapi(APIView):
             
             #change this to suit the data on esp
             # Extract location data
-            temperature = data.get('temperature')
+            location = data.get('location')
             
 
             # Simple validation check
-            if temperature is None or humidity is None:
+            if location is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Do something with the data (e.g., save to DB or further processing)
-            #sensor_data = SensorData(
-            #    temperature=temperature,
-            #    humidity=humidity,
-            #    timestamp=timestamp
-            #)
-            #sensor_data.save() We are not saving, we are feeding it to the frontend
+           
+            location_data = location(
+                location=location
+                
+            )
+            location_data.save() 
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         
         except Exception as e:
@@ -328,13 +327,11 @@ class soilprecipitation(APIView):
             if soilprecipitation is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Do something with the data (e.g., save to DB or further processing)
-            #sensor_data = SensorData(
-            #    temperature=temperature,
-            #    humidity=humidity,
-            #    timestamp=timestamp
-            #)
-            #sensor_data.save() We are not saving, we are feeding it to the frontend
+            
+            soilprecipitation = soilprecipitation(
+                soilprecipitation=soilprecipitation
+            )
+            soilprecipitation.save() 
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         
         except Exception as e:
