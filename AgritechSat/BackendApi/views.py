@@ -39,7 +39,7 @@ class imagesapi(APIView):
             image= data.get('image')
             image_name = image.split('/')[0]
             image = image.split('/', 1) 
-            image=image[0]
+            image=image[1]
             # Simple validation check
             if image is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
