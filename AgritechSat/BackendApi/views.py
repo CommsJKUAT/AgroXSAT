@@ -35,16 +35,8 @@ class imagesapi(APIView):
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
                 print("Extracted Data:", data)
 
-            # Extract temperature and humidity
+            # Extract image
             image= data.get('image')
-<<<<<<< HEAD
-<<<<<<< HEAD
-            print(image)
-=======
->>>>>>> 43650641ffe44ed92e40f9e855f8dff09591a58e
-=======
->>>>>>> 43650641ffe44ed92e40f9e855f8dff09591a58e
-
             image_name = image.split('/')[0]
             image = image.split('/', 1) 
             image=image[0]
@@ -54,24 +46,12 @@ class imagesapi(APIView):
             
             image_data = Images(
                 image=image,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-                image_name=image_name
-
->>>>>>> 43650641ffe44ed92e40f9e855f8dff09591a58e
-=======
-                image_name=image_name
-
->>>>>>> 43650641ffe44ed92e40f9e855f8dff09591a58e
-                
-                
+                image_name=image_name   
             )
             image_data.save()
            
             return Response({"message": "Success", "data": image}, status=status.HTTP_200_OK)
-<<<<<<< HEAD
-        
+      
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -111,9 +91,7 @@ class temperatureapi(APIView):
             temperature_data.save()
            
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
-=======
->>>>>>> 43650641ffe44ed92e40f9e855f8dff09591a58e
-        
+
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
