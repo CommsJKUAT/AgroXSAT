@@ -84,7 +84,7 @@ class temperatureapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             temperature_data = temperature(
-                temperature=temperature,
+                temperature=temperature
                 
                 
             )
@@ -124,7 +124,7 @@ class humidityapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             humidity_data = humidity(
-                humidity=humidity,
+                humidity=humidity
                 
                 
             )
@@ -164,7 +164,7 @@ class batteryapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             batt_data = batt(
-                batt=batt,
+                batt=batt
                 
                 
             )
@@ -204,7 +204,7 @@ class smokeapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             smoke_data = smoke(
-                smoke=smoke,
+                smoke=smoke
                 
                 
             )
@@ -245,7 +245,7 @@ class soilphapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             soilph_data = soilph(
-                soilph=soilph,
+                soilph=soilph
                 
                 
             )
