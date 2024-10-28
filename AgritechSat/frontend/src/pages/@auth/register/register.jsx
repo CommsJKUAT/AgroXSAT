@@ -44,7 +44,7 @@ function Register() {
 
       if (response.ok) {
         alert("Registration successful");
-        navigate("/login");
+        navigate("/");
       } else {
         // Handle errors returned from the backend
         if (result.error) {
