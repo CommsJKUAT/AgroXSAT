@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 import json
 from django.shortcuts import render
-from .models import SensorData,Images
+from .models import Images
 from .forms import CoordinateForm
 from geopy.distance import geodesic
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -18,9 +18,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 
-def sensor_data_view(request):
-    sensor_data = SensorData.objects.all()  # Fetch all records from the database
-    return render(request, 'sensor_data.html', {'sensor_data': sensor_data})
+#def sensor_data_view(request):
+#    sensor_data = SensorData.objects.all()  # Fetch all records from the database
+#    return render(request, 'sensor_data.html', {'sensor_data': sensor_data})
 
 def image_data_view(request):
     image_data = Images.objects.all()  # Fetch all records from the database
