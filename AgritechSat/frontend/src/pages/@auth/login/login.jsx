@@ -36,16 +36,15 @@ const Login = () => {
             console.log('Response Status:', response.status);
 
             const contentType = response.headers.get('Content-Type');
-            const responseBody = await response.text();
+            const responseBody = await response.json();
 
             if (response.ok) {
-                const { access, refresh , username, email} = JSON.parse(responseBody);
+                const { access, refresh, username, email } = responseBody;
                 localStorage.setItem('accessToken', access);
                 localStorage.setItem('refreshToken', refresh);
                 localStorage.setItem('username', username);
-                localStorage.setItem('email', email);
-                navigate('/dashboard'); 
-            } else {
+                localStorage.setItem('email', email); 
+            }else {
                 let errorMessage = 'Error logging in';
 
                 if (contentType && contentType.includes('application/json')) {
