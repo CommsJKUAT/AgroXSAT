@@ -39,7 +39,7 @@ const Login = () => {
             const responseBody = await response.text();
 
             if (response.ok) {
-                const { access, refresh } = JSON.parse(responseBody);
+                const { access, refresh , username, email} = JSON.parse(responseBody);
                 localStorage.setItem('accessToken', access);
                 localStorage.setItem('refreshToken', refresh);
                 localStorage.setItem('username', user.username);
