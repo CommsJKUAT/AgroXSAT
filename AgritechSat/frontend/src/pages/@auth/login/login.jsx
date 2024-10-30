@@ -39,11 +39,15 @@ const Login = () => {
             const responseBody = await response.json();
 
             if (response.ok) {
+              console.log("Access Token:", localStorage.getItem('accessToken'));
+              console.log("Username from localStorage:", localStorage.getItem('username'));
+              console.log("Email from localStorage:", localStorage.getItem('email'));
                 const { access, refresh, username, email } = responseBody;
                 localStorage.setItem('accessToken', access);
                 localStorage.setItem('refreshToken', refresh);
                 localStorage.setItem('username', username);
                 localStorage.setItem('email', email); 
+
             }else {
                 let errorMessage = 'Error logging in';
 
