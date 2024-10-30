@@ -42,8 +42,8 @@ const Login = () => {
                 const { access, refresh , username, email} = JSON.parse(responseBody);
                 localStorage.setItem('accessToken', access);
                 localStorage.setItem('refreshToken', refresh);
-                localStorage.setItem('username', user.username);
-                localStorage.setItem('email', user.email);
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
                 navigate('/dashboard'); 
             } else {
                 let errorMessage = 'Error logging in';
