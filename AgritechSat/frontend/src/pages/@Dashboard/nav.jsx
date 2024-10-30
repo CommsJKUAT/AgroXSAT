@@ -1,13 +1,19 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { initFlowbite } from "flowbite";
-import { useEffect } from "react";
+import { useEffect,useState  } from "react";
 
 const DashboardNav = () => {
   const location = useLocation();
-  const username = localStorage.getItem('username');
-  const email = localStorage.getItem('email');
-  useEffect(() => {
-    initFlowbite();
+  const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+
+    useEffect(() => {
+       
+        setUsername(localStorage.getItem('username') || ''); 
+        setEmail(localStorage.getItem('email') || '');
+        initFlowbite();
+  
+    
   }, []);
 
   return (
