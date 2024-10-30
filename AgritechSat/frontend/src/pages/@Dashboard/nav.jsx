@@ -4,7 +4,8 @@ import { useEffect } from "react";
 
 const DashboardNav = () => {
   const location = useLocation();
-
+  const username = localStorage.getItem('username');
+  const email = localStorage.getItem('email');
   useEffect(() => {
     initFlowbite();
   }, []);
@@ -43,9 +44,9 @@ const DashboardNav = () => {
             id="user-dropdown"
           >
             <div className="px-4 py-3">
-              <span className="block text-sm text-white">Bonnie Green</span>
+              <span className="block text-sm text-white">{username}</span>
               <span className="block text-sm text-gray-400">
-                name@agroXSAT.com
+                {email}
               </span>
             </div>
             <ul className="py-2" aria-labelledby="user-menu-button">
