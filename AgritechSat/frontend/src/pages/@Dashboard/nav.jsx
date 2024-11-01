@@ -1,12 +1,24 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { initFlowbite } from "flowbite";
-import { useEffect } from "react";
+import { useEffect,useState  } from "react";
 
 const DashboardNav = () => {
   const location = useLocation();
+  const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
 
-  useEffect(() => {
-    initFlowbite();
+    useEffect(() => {
+       
+      const storedUsername = localStorage.getItem('username') || '';
+      const storedEmail = localStorage.getItem('email') || '';
+      console.log("Stored username:", storedUsername);
+      console.log("Stored email:", storedEmail);
+  
+      setUsername(storedUsername);
+      setEmail(storedEmail);
+      initFlowbite();
+  
+    
   }, []);
 
   return (
@@ -43,9 +55,9 @@ const DashboardNav = () => {
             id="user-dropdown"
           >
             <div className="px-4 py-3">
-              <span className="block text-sm text-white">Bonnie Green</span>
+              <span className="block text-sm text-white">{username}</span>
               <span className="block text-sm text-gray-400">
-                name@agroXSAT.com
+                {email}
               </span>
             </div>
             <ul className="py-2" aria-labelledby="user-menu-button">

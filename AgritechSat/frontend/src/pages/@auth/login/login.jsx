@@ -1,6 +1,6 @@
 import Nav from "../nav";
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -36,14 +36,20 @@ const Login = () => {
             console.log('Response Status:', response.status);
 
             const contentType = response.headers.get('Content-Type');
-            const responseBody = await response.text();
+            const responseBody = await response.json();
 
             if (response.ok) {
-                const { access, refresh } = JSON.parse(responseBody);
+              console.log("Access Token:", localStorage.getItem('accessToken'));
+              console.log("Username from localStorage:", localStorage.getItem('username'));
+              console.log("Email from localStorage:", localStorage.getItem('email'));
+                const { access, refresh, user } = responseBody;
+                console.log(responseBody);
                 localStorage.setItem('accessToken', access);
                 localStorage.setItem('refreshToken', refresh);
-                navigate('/dashboard'); 
-            } else {
+                localStorage.setItem('username', user.username); 
+                localStorage.setItem('email', user.email);  
+                navigate('/dashboard');
+            }else {
                 let errorMessage = 'Error logging in';
 
                 if (contentType && contentType.includes('application/json')) {
