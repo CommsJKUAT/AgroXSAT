@@ -4,30 +4,14 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 from datetime import timedelta
-
-
 load_dotenv()
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')  
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') 
-
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'https://agroxsat.onrender.com/'
 ]
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -91,9 +75,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
-
 ROOT_URLCONF = 'AgritechSat.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -111,9 +93,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'AgritechSat.wsgi.application'
-
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -125,11 +104,6 @@ DATABASES = {
     }
 }
 DATABASES['default'] = dj_database_url.parse(os.getenv("DATABASECREDS"))
-#AUTH_USER_MODEL = 'Backend.CustomUser'
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -144,27 +118,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-
 LANGUAGE_CODE = 'en-us'
-
-# settings.py
 TIME_ZONE = 'Africa/Nairobi'
-
 USE_TZ = True
-
-
 USE_I18N = True
-
-
-
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'https://agroxsatsite.onrender.com',
     'http://localhost:5173',
-   
 ]
