@@ -339,6 +339,11 @@ class soilprecipitation(APIView):
 
 @permission_classes([AllowAny])
 class groundstationCoordinates(APIView):
+
+    def get(self, request, *args, **kwargs):
+        # Example: Respond with a simple message or retrieve existing coordinates if needed
+        return Response({"message": "This is a GET request"}, status=status.HTTP_200_OK)
+
     def post(self, request, *args, **kwargs):
 
         try:
