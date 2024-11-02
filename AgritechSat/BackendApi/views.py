@@ -341,6 +341,8 @@ class soilprecipitation(APIView):
 
 @permission_classes([AllowAny])
 class groundstationCoordinates(APIView):
+
+    
     def post(self, request, *args, **kwargs):
         try:
             # Parse the incoming data
