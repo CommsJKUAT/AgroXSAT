@@ -374,20 +374,19 @@ class groundstationCoordinates(APIView):
             location = geolocator.reverse((latitude, longitude), exactly_one=True)
             
             if location:
-                # Extract address details
-                address = location.raw.get("address", {})
-                city = address.get("village")
-                country = address.get("country")
+                # Extract the display name and get the first part
                 display_name = location.address
+                first_element = display_name.split(",")[0].strip()
 
-                # Save coordinates if required
-                coords = GSCoordinates(latitude=latitude, longitude=longitude)
-                coords.save()
+                # Extract city and country information
+                address = location.raw.get("address", {})
+                city = address.get("city") or address.get("town") or address.get("village")
+                country = address.get("country")
 
                 return Response({
                     "status": "success",
                     "location": {
-                        "display_name": display_name,
+                        "first_element": first_element,
                         "city": city,
                         "country": country
                     }
