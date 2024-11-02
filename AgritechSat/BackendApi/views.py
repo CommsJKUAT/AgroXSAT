@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from geopy.geocoders import Nominatim
 
 
+
 def homepage(request):
     return HttpResponse("Agrosat Backend Apis!")
 
