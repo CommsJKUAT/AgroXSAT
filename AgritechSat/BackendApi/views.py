@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 from Backend.models import smoke,batt,temperature,soilph,soilprecipitation
 from Backend.models import GSCoordinates,Images
 from django.views.decorators.csrf import csrf_exempt 
+from geopy.geocoders import Nominatim
+
 
 
 def homepage(request):
@@ -342,8 +344,8 @@ class groundstationCoordinates(APIView):
 
     
     def post(self, request, *args, **kwargs):
-
         try:
+            # Parse the incoming data
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
                 print("Parsed as JSON:", data)
@@ -358,25 +360,43 @@ class groundstationCoordinates(APIView):
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
                 print("Extracted Data:", data)
-                
+
+            # Retrieve latitude and longitude from the data
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-            entry = GSCoordinates(data)
-            entry.coordinatesave()
-            
+
+            # Validate that both latitude and longitude are provided
             if latitude is None or longitude is None:
-                return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Latitude and longitude are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-            coords = GSCoordinates(
-                latitude=latitude,
-                longitude=longitude
-                
-            )
-            coords.save()
+            # Reverse geocode to get location details
+            geolocator = Nominatim(user_agent="Agrixsat")
+            location = geolocator.reverse((latitude, longitude), exactly_one=True)
+            
+            if location:
+                # Extract address details
+                address = location.raw.get("address", {})
+                city = address.get("city") or address.get("town") or address.get("village")
+                country = address.get("country")
+                display_name = location.address
 
-            return JsonResponse({'status': 'success', 'message': 'Coordinates updated'})
+                # Save coordinates if required
+                coords = GSCoordinates(latitude=latitude, longitude=longitude)
+                coords.save()
+
+                return Response({
+                    "status": "success",
+                    "location": {
+                        "display_name": display_name,
+                        "city": city,
+                        "country": country
+                    }
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Location not found"}, status=status.HTTP_404_NOT_FOUND)
+
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 
