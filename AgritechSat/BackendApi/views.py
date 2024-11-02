@@ -376,7 +376,7 @@ class groundstationCoordinates(APIView):
             if location:
                 # Extract address details
                 address = location.raw.get("address", {})
-                city = address.get("city") or address.get("town") or address.get("village")
+                city = address.get("town") or address.get("village")
                 country = address.get("country")
                 display_name = location.address
 
