@@ -17,7 +17,7 @@ const Dashboard = () => {
     // Function to fetch coordinates from the backend
     const fetchCoordinates = async () => {
       try {
-        const response = await fetch("/api/coordinates"); // Adjust this endpoint as needed
+        const response = await fetch("https://agroxsat.onrender.com/backendapi/"); // Adjust this endpoint as needed
         if (!response.ok) throw new Error("Failed to fetch coordinates");
         const data = await response.json();
         return data; // Assuming data has { lat, lon }
