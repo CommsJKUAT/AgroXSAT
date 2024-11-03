@@ -122,13 +122,85 @@ const DashboardNav = () => {
         >
           <div className="group">
             <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-black-olive md:space-x-1 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
-              {/* Add your navigation links here as before */}
-              <li>
-                <NavLink to="/dashboard" className={`block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300 ${location.pathname === "/dashboard" ? "bg-olive/50 rounded-full" : "opacity-50"}`}>
+              {/* Dashboard Link */}
+              <li
+                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
+                  location.pathname === "/dashboard"
+                    ? "bg-olive/50 rounded-full"
+                    : "opacity-50"
+                }`}
+              >
+                <NavLink
+                  to="/dashboard"
+                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
+                >
                   Dashboard
                 </NavLink>
               </li>
-              
+
+              {/* Gallery Link */}
+              <li
+                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
+                  location.pathname === "/gallery"
+                    ? "bg-olive/50 rounded-full"
+                    : "opacity-50"
+                }`}
+              >
+                <NavLink
+                  to="/gallery"
+                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
+                >
+                  Gallery
+                </NavLink>
+              </li>
+
+              {/* Sensors Link */}
+              <li
+                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
+                  location.pathname === "/sensors"
+                    ? "bg-olive/50 rounded-full"
+                    : "opacity-50"
+                }`}
+              >
+                <NavLink
+                  to="/sensors"
+                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
+                >
+                  Sensors
+                </NavLink>
+              </li>
+
+              {/* Telemetry Link */}
+              <li
+                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
+                  location.pathname === "/telemetry"
+                    ? "bg-olive/50 rounded-full"
+                    : "opacity-50"
+                }`}
+              >
+                <NavLink
+                  to="/telemetry"
+                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
+                >
+                  Telemetry
+                </NavLink>
+              </li>
+
+              {/* Commands Link */}
+              <li
+                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
+                  location.pathname === "/commands"
+                    ? "bg-olive/50 rounded-full"
+                    : "opacity-50"
+                }`}
+              >
+                <NavLink
+                  to="/commands"
+                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
+                >
+                  Commands
+                </NavLink>
+              </li>
             </ul>
           </div>
         </div>
