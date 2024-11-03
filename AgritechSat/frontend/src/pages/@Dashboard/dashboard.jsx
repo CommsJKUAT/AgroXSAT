@@ -19,7 +19,9 @@ const Dashboard = () => {
       try {
         const response = await fetch("https://agroxsat.onrender.com/backendapi/");
         if (!response.ok) throw new Error("Failed to fetch coordinates");
-        return await response.json();
+        const data = await response.json();
+        console.log("Fetched coordinates:", data); // Log the fetched coordinates
+        return data; // Return the data directly
       } catch (error) {
         console.error("Error fetching coordinates:", error);
         return null;
@@ -43,7 +45,8 @@ const Dashboard = () => {
     const getLocationData = async () => {
       const coords = await fetchCoordinates();
       if (coords) {
-        await fetchPlaceAndCountry(coords.lat, coords.lon);
+        const { latitude, longitude } = coords; 
+        await fetchPlaceAndCountry(latitude, longitude); 
       }
     };
 
