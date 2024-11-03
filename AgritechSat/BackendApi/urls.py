@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import homepage,get_gs,temperatureapi,soilprecipitation,soilphapi,smokeapi,batteryapi,humidityapi,locationapi,imagesapi,groundstationCoordinates,get_gs
+from .views import homepage,get_gs,save_gs_coordinates,temperatureapi,soilprecipitation,soilphapi,smokeapi,batteryapi,humidityapi,locationapi,imagesapi,groundstationCoordinates,get_gs
 
 
 urlpatterns = [
@@ -12,7 +12,7 @@ urlpatterns = [
     path('soilph/', soilphapi.as_view(), name="soilph"), 
     path('soilprec/', soilprecipitation.as_view(), name="soilprec"), 
     path('batt/', batteryapi.as_view(), name="batt"), 
-     
+    path('setGS/' , save_gs_coordinates,name="basestation setting"),
     path('smoke/', smokeapi.as_view(), name="smoke"), 
     
 ]
