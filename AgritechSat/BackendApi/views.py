@@ -438,13 +438,20 @@ class save_gs_coordinates(APIView):
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
             
                         
-            coords_data = GSCoordinates (
-                latitude = float(latitude),
-                longitude = float(longitude)
+            coords, created = GSCoordinates.objects.update_or_create(
+                id=1,  # Assuming you want to keep only one record
+                defaults={
+                    'latitude': float(latitude),
+                    'longitude': float(longitude),
+                }
             )
-            coords_data.save()
-            
-            return Response({"success": "Coordinates saved successfully"}, status=status.HTTP_200_OK)
+
+            if created:
+                return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"success": "Coordinates updated successfully"}, status=status.HTTP_200_OK)
 
         except ValueError:
             return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
