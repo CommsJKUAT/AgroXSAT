@@ -30,7 +30,13 @@ const Dashboard = () => {
 
     const fetchPlaceAndCountry = async (lat, lon) => {
       try {
-        const response = await fetch(`https://agroxsat.onrender.com/backendapi/baseStation/?lat=${lat}&lon=${lon}`);
+        const response = await fetch('https://agroxsat.onrender.com/backendapi/baseStation/', {
+          method: 'POST', // Change to POST if required
+          headers: {
+            'Content-Type': 'application/json', // Ensure to set the correct content type
+          },
+          body: JSON.stringify({ lat, lon }) // Send coordinates in the request body
+        });
         if (!response.ok) throw new Error("Failed to fetch place and country");
         const data = await response.json();
         setLocationData({
@@ -41,6 +47,7 @@ const Dashboard = () => {
         console.error("Error fetching place and country:", error);
       }
     };
+    
 
     const getLocationData = async () => {
       const coords = await fetchCoordinates();
