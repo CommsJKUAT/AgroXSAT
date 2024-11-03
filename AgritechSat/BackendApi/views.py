@@ -359,6 +359,10 @@ class groundstationCoordinates(APIView):
             latitude = float(latitude)
             longitude = float(longitude)
 
+            coords, created = GSCoordinates.objects.get_or_create(id=1)
+            coords.latitude = latitude
+            coords.longitude = longitude
+            coords.save()
             # Make GET request to Mapbox API for reverse geocoding
             mapbox_url = f"https://api.mapbox.com/search/geocode/v6/reverse?longitude={longitude}&latitude={latitude}&access_token={MAPBOX_ACCESS_TOKEN}"
             response = requests.get(mapbox_url)
