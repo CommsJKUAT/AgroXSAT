@@ -455,3 +455,18 @@ class save_gs_coordinates(APIView):
             return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
         except json.JSONDecodeError:
             return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+
+@permission_classes([AllowAny])       
+class CommandView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Extract command from the request
+        command_data = request.data.get('command')
+        
+        if command_data is None:
+            return JsonResponse({"error": "Missing command"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Here, you would send the command to the ESP (e.g., via MQTT)
+        # For demonstration, let's just print the command
+        print(f"Received command: {command_data}")
+
+        return JsonResponse({"success": "Command received"}, status=status.HTTP_200_OK)
