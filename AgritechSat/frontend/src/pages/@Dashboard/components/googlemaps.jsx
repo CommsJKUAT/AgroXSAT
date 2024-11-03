@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import mapboxgl from "mapbox-gl";
 
-mapboxgl.accessToken = "YOUR_MAPBOX_ACCESS_TOKEN";
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const MapboxComponent = () => {
   const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
