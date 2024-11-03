@@ -42,10 +42,12 @@ const Dashboard = () => {
         if (!response.ok) throw new Error("Failed to fetch place and country");
         const data = await response.json();
         console.log(data);
+        const { place = "Unknown Place", country = "Unknown Country" } = data.location || {}; 
+
         setLocationData({
-          place: data.place || "Unknown Place",
-          country: data.country || "Unknown Country",
-        });
+        place,
+        country,
+    });
       } catch (error) {
         console.error("Error fetching place and country:", error);
       }
