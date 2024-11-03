@@ -455,7 +455,8 @@ class save_gs_coordinates(APIView):
             return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
         except json.JSONDecodeError:
             return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+@permission_classes([AllowAny])       
 class CommandView(APIView):
     def post(self, request, *args, **kwargs):
         # Extract command from the request
