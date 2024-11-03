@@ -8,7 +8,6 @@ const MapboxComponent = () => {
   const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
 
   useEffect(() => {
-    // Fetch coordinates from your backend API
     const fetchCoordinates = async () => {
       try {
         const response = await axios.get("https://agroxsat.onrender.com/backendapi/");
@@ -28,8 +27,12 @@ const MapboxComponent = () => {
     }
   }, [coordinates]);
 
+  const metersToPixels = (meters, zoom) => {
+    const metersPerPixel = 156543.04 / Math.pow(2, zoom);
+    return meters / metersPerPixel; // Convert meters to pixels
+  };
+
   const initMap = () => {
-    // Initialize Mapbox map
     const map = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
@@ -37,30 +40,33 @@ const MapboxComponent = () => {
       zoom: 13,
     });
 
-    // Add a custom marker
+    // Create a custom marker
     const markerElement = document.createElement("div");
-    markerElement.style.backgroundImage = "url('/GSimage.jpg')";
+    markerElement.style.backgroundImage = "url('/GSimage.jpg')"; // Ensure this path is correct
     markerElement.style.width = "50px";
     markerElement.style.height = "50px";
     markerElement.style.backgroundSize = "contain";
+    markerElement.style.backgroundRepeat = "no-repeat"; // Prevents image from repeating
+    markerElement.style.backgroundPosition = "center"; // Centers the image
 
-    new mapboxgl.Marker(markerElement)
-      .setLngLat([coordinates.longitude, coordinates.latitude])
-      .addTo(map);
-
-    // Create a popup
-    const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
-
-    // Add the popup to the marker
-    markerElement.addEventListener("mouseover", () => {
-      popup.setLngLat([coordinates.longitude, coordinates.latitude]).addTo(map);
-    });
-    markerElement.addEventListener("mouseout", () => {
-      popup.remove();
-    });
-
-    // Draw a circle using GeoJSON
+    // Ensure the map loads before adding the marker
     map.on("load", () => {
+      new mapboxgl.Marker(markerElement)
+        .setLngLat([coordinates.longitude, coordinates.latitude])
+        .addTo(map);
+
+      // Create a popup
+      const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
+      
+      // Add the popup to the marker
+      markerElement.addEventListener("mouseover", () => {
+        popup.setLngLat([coordinates.longitude, coordinates.latitude]).addTo(map);
+      });
+      markerElement.addEventListener("mouseout", () => {
+        popup.remove();
+      });
+
+      // Add GeoJSON circle
       map.addSource("circle", {
         type: "geojson",
         data: {
@@ -77,21 +83,34 @@ const MapboxComponent = () => {
         },
       });
 
-      map.addLayer({
-        id: "circle-fill",
-        type: "circle",
-        source: "circle",
-        paint: {
-          "circle-radius": {
-            stops: [
-              [13, 1000 / 2], // adjust radius according to zoom
-              [15, 1000],     // radius in meters
-            ],
-          },
-          "circle-color": "#FF0000",
-          "circle-opacity": 0.35,
-        },
-      });
+      // Use the zoom event to update the circle radius
+      const updateCircleRadius = () => {
+        const zoom = map.getZoom();
+        const radiusInMeters = 1000; // 1000 meters radius
+        const radiusInPixels = metersToPixels(radiusInMeters, zoom);
+
+        if (map.getLayer("circle-fill")) {
+          map.setPaintProperty("circle-fill", "circle-radius", radiusInPixels);
+        } else {
+          map.addLayer({
+            id: "circle-fill",
+            type: "circle",
+            source: "circle",
+            paint: {
+              "circle-radius": radiusInPixels,
+              "circle-color": "#FF0000",
+              "circle-opacity": 0.35,
+            },
+          });
+        }
+      };
+
+      // Initial circle radius setting
+      updateCircleRadius();
+
+      // Update circle radius on zoom
+      map.on("zoom", updateCircleRadius);
+      map.on("moveend", updateCircleRadius); // Also update when the map is moved
     });
   };
 
