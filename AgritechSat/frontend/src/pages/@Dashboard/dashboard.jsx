@@ -6,9 +6,61 @@ import { initFlowbite } from "flowbite";
 import SoilMoistureTemperatureChart from "./components/charts/SoilMoistureTemperatureChart";
 
 const Dashboard = () => {
+  const [locationData, setLocationData] = useState({
+    place: "Loading...",
+    country: "Loading...",
+  });
+
   useEffect(() => {
     initFlowbite();
-  });
+
+    // Function to fetch coordinates from the backend
+    const fetchCoordinates = async () => {
+      try {
+        const response = await fetch("/api/coordinates"); // Adjust this endpoint as needed
+        if (!response.ok) throw new Error("Failed to fetch coordinates");
+        const data = await response.json();
+        return data; // Assuming data has { lat, lon }
+      } catch (error) {
+        console.error("Error fetching coordinates:", error);
+        return null;
+      }
+    };
+
+    // Function to fetch place and country using coordinates
+    const fetchPlaceAndCountry = async (lat, lon) => {
+      try {
+        const response = await fetch(
+          `https://agroxsat.onrender.com/backendapi/baseStation/?lat=${lat}&lon=${lon}` // Replace with actual API URL
+        ); // Update the endpoint to your API
+        if (!response.ok) throw new Error("Failed to fetch place and country");
+        const data = await response.json();
+        setLocationData({
+          place: data.place || "Unknown Place",
+          country: data.country || "Unknown Country",
+        });
+      } catch (error) {
+        console.error("Error fetching place and country:", error);
+      }
+    };
+
+    // Main function to get coordinates and then fetch place/country
+    const getLocationData = async () => {
+      const coords = await fetchCoordinates();
+      if (coords) {
+        await fetchPlaceAndCountry(coords.lat, coords.lon);
+      }
+    };
+
+    getLocationData();
+
+    // Set up interval to refresh location data
+    const intervalId = setInterval(getLocationData, 60000); // Fetch every 60 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <>
       <DashboardNav />
