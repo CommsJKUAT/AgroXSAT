@@ -11,8 +11,12 @@ from Backend.models import smoke,batt,temperature,soilph,soilprecipitation
 from Backend.models import GSCoordinates,Images
 from django.views.decorators.csrf import csrf_exempt 
 from geopy.geocoders import Nominatim
+from dotenv import load_dotenv
+import os
+from geopy.geocoders import MapBox
+import requests
 
-
+load_dotenv()
 
 def homepage(request):
     return HttpResponse("Agrosat Backend Apis!")
@@ -339,63 +343,59 @@ class soilprecipitation(APIView):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX')
+
 @permission_classes([AllowAny])
 class groundstationCoordinates(APIView):
-
-    
     def post(self, request, *args, **kwargs):
         try:
-            # Parse the incoming data
-            if isinstance(request.data, dict) and '_content' not in request.data:
-                data = request.data
-                print("Parsed as JSON:", data)
-            else:
-                # Convert QueryDict to a dictionary
-                data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
-
-            # Retrieve latitude and longitude from the data
+            data = request.data
+            if '_content' in data:
+                data = json.loads(data['_content'])
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-
-            # Validate that both latitude and longitude are provided
             if latitude is None or longitude is None:
-                return Response({"error": "Latitude and longitude are required."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
+            latitude = float(latitude)
+            longitude = float(longitude)
 
-            # Reverse geocode to get location details
-            geolocator = Nominatim(user_agent="Agrixsat")
-            location = geolocator.reverse((latitude, longitude), exactly_one=True)
-            
-            if location:
-                address = location.raw.get("address", {})
-                place = address.get("suburb") or address.get("neighbourhood") or address.get("locality") or address.get("town") or address.get("village") or address.get("city")
-                country = address.get("country")
+            # Make GET request to Mapbox API for reverse geocoding
+            mapbox_url = f"https://api.mapbox.com/search/geocode/v6/reverse?longitude={longitude}&latitude={latitude}&access_token={MAPBOX_ACCESS_TOKEN}"
+            response = requests.get(mapbox_url)
 
-                # If place is not found, fall back to display name
-                if not place:
-                    place = location.address.split(",")[0].strip()  # Fallback to the first element of display_name
+            if response.status_code == 200:
+                location_data = response.json()
 
-                return Response({
-                    "status": "success",
-                    "location": {
-                        "place": place,
-                        "country": country
-                    }
-                }, status=status.HTTP_200_OK)
+                # Extract place_formatted from the response if available
+                features = location_data.get("features", [])
+                if features:
+                    place_formatted = features[0].get("properties", {}).get("place_formatted", "Unknown")
+
+                    # Split place_formatted into place and country
+                    place_parts = place_formatted.split(", ")
+                    if len(place_parts) >= 2:
+                        place = ", ".join(place_parts[:-1])  # Join all except last as place
+                        country = place_parts[-1]  # Last part as country
+                    else:
+                        place = place_formatted
+                        country = "Unknown"
+
+                    return Response({
+                        "status": "success",
+                        "location": {
+                            "place": place,
+                            "country": country
+                        }
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response({"error": "Location not found"}, status=status.HTTP_404_NOT_FOUND)
             else:
-                return Response({"error": "Location not found"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": "Mapbox API error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        except ValueError:
+            return Response({'status': 'error', 'message': "Invalid latitude or longitude values"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({"status": "error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-
+            return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def get_gs(request):
     coords = GSCoordinates.objects.first()

@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import homepage,temperatureapi,soilprecipitation,soilphapi,smokeapi,batteryapi,humidityapi,locationapi,imagesapi,groundstationCoordinates,get_gs
+from .views import homepage,get_gs,temperatureapi,soilprecipitation,soilphapi,smokeapi,batteryapi,humidityapi,locationapi,imagesapi,groundstationCoordinates,get_gs
 
 
 urlpatterns = [
-    #path('', backendapires.as_view(), name="homepage"),
+    path('', get_gs, name="homepage"),
     path('location/', locationapi.as_view(), name="location"),
     path('images/', imagesapi.as_view(), name="images"),
     path('baseStation/', groundstationCoordinates.as_view(), name="station"),  # this is for the esp 32 module
