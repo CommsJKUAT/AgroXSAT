@@ -1,5 +1,5 @@
 import {  useState, useEffect } from "react";
-import GoogleMapComponent from "./components/googlemaps";
+import MapboxComponent from "./components/googlemaps";
 import Modal from "./components/modal";
 import DashboardNav from "./nav";
 import { initFlowbite } from "flowbite";
@@ -193,7 +193,7 @@ const Dashboard = () => {
       </aside>
 
       <div class="sm:ml-80 h-screen pt-14 relative">
-        <GoogleMapComponent />
+        <MapboxComponent />
         <Modal />
       </div>
     </>
