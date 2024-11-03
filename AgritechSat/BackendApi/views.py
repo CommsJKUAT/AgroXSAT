@@ -459,6 +459,7 @@ class save_gs_coordinates(APIView):
 @permission_classes([AllowAny])       
 class CommandView(APIView):
     command_list = []  
+
     def post(self, request, *args, **kwargs):        
         command_data = request.data.get('command')        
         if command_data is None:
@@ -466,6 +467,7 @@ class CommandView(APIView):
         
         self.__class__.command_list.append(command_data)        
         print(f"Received command: {command_data}")
+        
         return JsonResponse({"success": "Command received"}, status=status.HTTP_200_OK)
 
     def get(self, request, *args, **kwargs):       
@@ -473,5 +475,5 @@ class CommandView(APIView):
             return JsonResponse({"error": "No commands available"}, status=status.HTTP_404_NOT_FOUND)
         
         command_to_return = self.__class__.command_list.pop(0)
-
+        print("Current command list after GET:", self.__class__.command_list)
         return JsonResponse({"command": command_to_return}, status=status.HTTP_200_OK)
