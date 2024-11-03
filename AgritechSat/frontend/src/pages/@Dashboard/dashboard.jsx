@@ -63,7 +63,7 @@ const Dashboard = () => {
     };
 
     getLocationData();
-    const intervalId = setInterval(getLocationData, 60000);
+    const intervalId = setInterval(getLocationData, 6000000);
     return () => clearInterval(intervalId);
   }, []);
 
