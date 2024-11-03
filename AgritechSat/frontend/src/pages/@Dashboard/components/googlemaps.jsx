@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import mapboxgl from "mapbox-gl";
 
-const GoogleMapComponent = () => {
+mapboxgl.accessToken = "YOUR_MAPBOX_ACCESS_TOKEN";
+
+const MapboxComponent = () => {
   const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
 
   useEffect(() => {
@@ -26,45 +29,69 @@ const GoogleMapComponent = () => {
   }, [coordinates]);
 
   const initMap = () => {
-    const map = new window.google.maps.Map(document.getElementById("map"), {
-      center: { lat: coordinates.latitude, lng: coordinates.longitude },
+    // Initialize Mapbox map
+    const map = new mapboxgl.Map({
+      container: "map",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [coordinates.longitude, coordinates.latitude],
       zoom: 13,
     });
 
-    const customMarkerIcon = {
-      url: "/GSimage.jpg",
-      scaledSize: new window.google.maps.Size(50, 50),
-    };
+    // Add a custom marker
+    const markerElement = document.createElement("div");
+    markerElement.style.backgroundImage = "url('/GSimage.jpg')";
+    markerElement.style.width = "50px";
+    markerElement.style.height = "50px";
+    markerElement.style.backgroundSize = "contain";
 
-    const marker = new window.google.maps.Marker({
-      position: { lat: coordinates.latitude, lng: coordinates.longitude },
-      map: map,
-      icon: customMarkerIcon,
+    new mapboxgl.Marker(markerElement)
+      .setLngLat([coordinates.longitude, coordinates.latitude])
+      .addTo(map);
+
+    // Create a popup
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
+
+    // Add the popup to the marker
+    markerElement.addEventListener("mouseover", () => {
+      popup.setLngLat([coordinates.longitude, coordinates.latitude]).addTo(map);
+    });
+    markerElement.addEventListener("mouseout", () => {
+      popup.remove();
     });
 
-    // Create a circle with a 3km radius
-    const circle = new window.google.maps.Circle({
-      strokeColor: "#FF0000",
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: "#FF0000",
-      fillOpacity: 0.35,
-      map: map,
-      center: { lat: coordinates.latitude, lng: coordinates.longitude },
-      radius: 1000, // Radius in meters (3 km)
-    });
+    // Draw a circle using GeoJSON
+    map.on("load", () => {
+      map.addSource("circle", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [coordinates.longitude, coordinates.latitude],
+              },
+            },
+          ],
+        },
+      });
 
-    const infoWindow = new window.google.maps.InfoWindow({
-      content: "<div style='color: black;'>The Ground Station</div>",
-    });
-
-    // Show the InfoWindow on mouseover and hide it on mouseout
-    marker.addListener("mouseover", () => {
-      infoWindow.open(map, marker);
-    });
-
-    marker.addListener("mouseout", () => {
-      infoWindow.close();
+      map.addLayer({
+        id: "circle-fill",
+        type: "circle",
+        source: "circle",
+        paint: {
+          "circle-radius": {
+            stops: [
+              [13, 1000 / 2], // adjust radius according to zoom
+              [15, 1000],     // radius in meters
+            ],
+          },
+          "circle-color": "#FF0000",
+          "circle-opacity": 0.35,
+        },
+      });
     });
   };
 
@@ -72,9 +99,7 @@ const GoogleMapComponent = () => {
     return <div>Loading map...</div>;
   }
 
-  return (
-    <div id="map" style={{ width: "100%", height: "100vh" }}></div>
-  );
+  return <div id="map" style={{ width: "100%", height: "100vh" }}></div>;
 };
 
-export default GoogleMapComponent;
+export default MapboxComponent;
