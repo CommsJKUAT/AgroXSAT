@@ -20,13 +20,13 @@ const DashboardNav = () => {
   }, []);
 
   const handleSignOut = () => {
-    
-    localStorage.removeItem('username');
-    localStorage.removeItem('email');
-    localStorage.removeItem('token');
-    
-    
-    navigate('/'); 
+    localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('username');
+  localStorage.removeItem('email');
+
+  
+  window.location.href = '/';
   };
 
   return (
