@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import {  useState, useEffect } from "react";
 import GoogleMapComponent from "./components/googlemaps";
 import Modal from "./components/modal";
 import DashboardNav from "./nav";
@@ -12,27 +12,23 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
+    // Initialize Flowbite
     initFlowbite();
 
-    // Function to fetch coordinates from the backend
     const fetchCoordinates = async () => {
       try {
-        const response = await fetch("https://agroxsat.onrender.com/backendapi/"); // Adjust this endpoint as needed
+        const response = await fetch("https://agroxsat.onrender.com/backendapi/");
         if (!response.ok) throw new Error("Failed to fetch coordinates");
-        const data = await response.json();
-        return data; // Assuming data has { lat, lon }
+        return await response.json();
       } catch (error) {
         console.error("Error fetching coordinates:", error);
         return null;
       }
     };
 
-    // Function to fetch place and country using coordinates
     const fetchPlaceAndCountry = async (lat, lon) => {
       try {
-        const response = await fetch(
-          `https://agroxsat.onrender.com/backendapi/baseStation/?lat=${lat}&lon=${lon}` // Replace with actual API URL
-        ); // Update the endpoint to your API
+        const response = await fetch(`https://agroxsat.onrender.com/backendapi/baseStation/?lat=${lat}&lon=${lon}`);
         if (!response.ok) throw new Error("Failed to fetch place and country");
         const data = await response.json();
         setLocationData({
@@ -44,7 +40,6 @@ const Dashboard = () => {
       }
     };
 
-    // Main function to get coordinates and then fetch place/country
     const getLocationData = async () => {
       const coords = await fetchCoordinates();
       if (coords) {
@@ -53,11 +48,7 @@ const Dashboard = () => {
     };
 
     getLocationData();
-
-    // Set up interval to refresh location data
-    const intervalId = setInterval(getLocationData, 60000); // Fetch every 60 seconds
-
-    // Cleanup interval on component unmount
+    const intervalId = setInterval(getLocationData, 60000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -93,8 +84,8 @@ const Dashboard = () => {
                 </svg>
 
                 <div className="flex flex-col">
-                  <span class="ms-3 font-medium">New Haven</span>
-                  <span class="ms-3 text-sm text-olive">Connecticut, USA</span>
+                  <span class="ms-3 font-medium">{locationData.place}</span>
+                  <span class="ms-3 text-sm text-olive">{locationData.country}</span>
                 </div>
               </a>
             </li>
