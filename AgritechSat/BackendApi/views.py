@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 import os
 from geopy.geocoders import MapBox
 import requests
-
 load_dotenv()
 
 def homepage(request):
@@ -413,8 +412,9 @@ def get_gs(request):
     
 
 
-def save_gs_coordinates(request):
-    if request.method == 'POST':
+@permission_classes([AllowAny])
+class save_gs_coordinates(APIView):
+    def post(self, request, *args, **kwargs):
         try:
             data = request.data
             if '_content' in data:
@@ -439,6 +439,31 @@ def save_gs_coordinates(request):
 
         except ValueError:
             return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        return Response({"error": "POST request required"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+
+class SaveGSCoordinatesView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            if '_content' in data:
+                data = json.loads(data['_content'])
+            
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+            
+            if latitude is None or longitude is None:
+                return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            latitude = float(latitude)
+            longitude = float(longitude)
+            
+            # Save the parsed coordinates
+            coords, created = GSCoordinates.objects.get_or_create(id=1)
+            coords.latitude = latitude
+            coords.longitude = longitude
+            coords.save()
+            
+            return Response({"success": "Coordinates saved successfully"}, status=status.HTTP_200_OK)
+
+        except ValueError:
+            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)

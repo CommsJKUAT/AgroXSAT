@@ -12,7 +12,7 @@ urlpatterns = [
     path('soilph/', soilphapi.as_view(), name="soilph"), 
     path('soilprec/', soilprecipitation.as_view(), name="soilprec"), 
     path('batt/', batteryapi.as_view(), name="batt"), 
-    path('setGS/' , save_gs_coordinates,name="basestation setting"),
+    path('setGS/' , save_gs_coordinates.as_view(),name="basestation setting"),
     path('smoke/', smokeapi.as_view(), name="smoke"), 
     
 ]
