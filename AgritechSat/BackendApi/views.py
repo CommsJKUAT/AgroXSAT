@@ -416,52 +416,33 @@ def get_gs(request):
 class save_gs_coordinates(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            data = request.data
-            if '_content' in data:
-                data = json.loads(data['_content'])
-            
+            if isinstance(request.data, dict) and '_content' not in request.data:
+                data = request.data
+                print("Parsed as JSON:", data)
+            else:
+                # Convert QueryDict to a dictionary
+                data = dict(request.data)
+                print("QueryDict Data:", data)
+                
+                # Extract JSON content from '_content' key
+                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
+                print(data_json)
+                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
+                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
+                print("Extracted Data:", data)
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-            
+            print(latitude)
+            print(longitude)
             if latitude is None or longitude is None:
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
             
-            latitude = float(latitude)
-            longitude = float(longitude)
-            
-            # Save the parsed coordinates
-            coords, created = GSCoordinates.objects.get_or_create(id=1)
-            coords.latitude = latitude
-            coords.longitude = longitude
-            coords.save()
-            
-            return Response({"success": "Coordinates saved successfully"}, status=status.HTTP_200_OK)
-
-        except ValueError:
-            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class SaveGSCoordinatesView(APIView):
-    def post(self, request, *args, **kwargs):
-        try:
-            data = request.data
-            if '_content' in data:
-                data = json.loads(data['_content'])
-            
-            latitude = data.get('latitude')
-            longitude = data.get('longitude')
-            
-            if latitude is None or longitude is None:
-                return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
-            
-            latitude = float(latitude)
-            longitude = float(longitude)
-            
-            # Save the parsed coordinates
-            coords, created = GSCoordinates.objects.get_or_create(id=1)
-            coords.latitude = latitude
-            coords.longitude = longitude
-            coords.save()
+                        
+            coords_data = GSCoordinates (
+                latitude = float(latitude),
+                longitude = float(longitude)
+            )
+            coords_data.save()
             
             return Response({"success": "Coordinates saved successfully"}, status=status.HTTP_200_OK)
 
