@@ -41,6 +41,7 @@ const Dashboard = () => {
         });
         if (!response.ok) throw new Error("Failed to fetch place and country");
         const data = await response.json();
+        console.log(data);
         setLocationData({
           place: data.place || "Unknown Place",
           country: data.country || "Unknown Country",
