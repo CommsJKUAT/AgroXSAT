@@ -1,25 +1,33 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { initFlowbite } from "flowbite";
-import { useEffect,useState  } from "react";
+import { useEffect, useState } from "react";
 
 const DashboardNav = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // useNavigate for programmatic navigation
   const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
 
-    useEffect(() => {
-       
-      const storedUsername = localStorage.getItem('username') || '';
-      const storedEmail = localStorage.getItem('email') || '';
-      console.log("Stored username:", storedUsername);
-      console.log("Stored email:", storedEmail);
-  
-      setUsername(storedUsername);
-      setEmail(storedEmail);
-      initFlowbite();
-  
-    
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username') || '';
+    const storedEmail = localStorage.getItem('email') || '';
+    console.log("Stored username:", storedUsername);
+    console.log("Stored email:", storedEmail);
+
+    setUsername(storedUsername);
+    setEmail(storedEmail);
+    initFlowbite();
   }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('username');
+  localStorage.removeItem('email');
+
+  
+  window.location.href = '/';
+  };
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-black-olive border-gray-200 dark:bg-gray-900">
@@ -62,24 +70,24 @@ const DashboardNav = () => {
             </div>
             <ul className="py-2" aria-labelledby="user-menu-button">
               <li>
-                <a href="#" className="block px-4 py-2 text-sm text-white">
+                <NavLink to="/dashboard" className="block px-4 py-2 text-sm text-white">
                   Dashboard
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a href="#" className="block px-4 py-2 text-sm text-white">
+                <NavLink to="/settings" className="block px-4 py-2 text-sm text-white">
                   Settings
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a href="#" className="block px-4 py-2 text-sm text-white">
+                <NavLink to="/earnings" className="block px-4 py-2 text-sm text-white">
                   Earnings
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a href="#" className="block px-4 py-2 text-sm text-white">
+                <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm text-white">
                   Sign out
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -114,85 +122,13 @@ const DashboardNav = () => {
         >
           <div className="group">
             <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-black-olive md:space-x-1 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
-              {/* Dashboard Link */}
-              <li
-                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
-                  location.pathname === "/dashboard"
-                    ? "bg-olive/50 rounded-full"
-                    : "opacity-50"
-                }`}
-              >
-                <NavLink
-                  to="/dashboard"
-                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
-                >
+              {/* Add your navigation links here as before */}
+              <li>
+                <NavLink to="/dashboard" className={`block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300 ${location.pathname === "/dashboard" ? "bg-olive/50 rounded-full" : "opacity-50"}`}>
                   Dashboard
                 </NavLink>
               </li>
-
-              {/* Gallery Link */}
-              <li
-                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
-                  location.pathname === "/gallery"
-                    ? "bg-olive/50 rounded-full"
-                    : "opacity-50"
-                }`}
-              >
-                <NavLink
-                  to="/gallery"
-                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
-                >
-                  Gallery
-                </NavLink>
-              </li>
-
-              {/* Sensors Link */}
-              <li
-                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
-                  location.pathname === "/sensors"
-                    ? "bg-olive/50 rounded-full"
-                    : "opacity-50"
-                }`}
-              >
-                <NavLink
-                  to="/sensors"
-                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
-                >
-                  Sensors
-                </NavLink>
-              </li>
-
-              {/* Telemetry Link */}
-              <li
-                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
-                  location.pathname === "/telemetry"
-                    ? "bg-olive/50 rounded-full"
-                    : "opacity-50"
-                }`}
-              >
-                <NavLink
-                  to="/telemetry"
-                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
-                >
-                  Telemetry
-                </NavLink>
-              </li>
-
-              {/* Commands Link */}
-              <li
-                className={`group-hover:opacity-50 hover:!opacity-100 hover:bg-olive/25 hover:rounded-full transition-all duration-300 px-4 py-1 ${
-                  location.pathname === "/commands"
-                    ? "bg-olive/50 rounded-full"
-                    : "opacity-50"
-                }`}
-              >
-                <NavLink
-                  to="/commands"
-                  className="block py-2 px-3 text-white rounded md:bg-transparent md:p-0 transition-opacity duration-300"
-                >
-                  Commands
-                </NavLink>
-              </li>
+              
             </ul>
           </div>
         </div>
