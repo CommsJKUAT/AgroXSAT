@@ -8,7 +8,7 @@ const GoogleMapComponent = () => {
     // Fetch coordinates from your backend API
     const fetchCoordinates = async () => {
       try {
-        const response = await axios.get("https://agroxsat.onrender.com/backendapi/mapgs/");
+        const response = await axios.get("https://agroxsat.onrender.com/backendapi/");
         const { latitude, longitude } = response.data;
         setCoordinates({ latitude, longitude });
       } catch (error) {
