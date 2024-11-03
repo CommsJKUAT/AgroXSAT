@@ -5,8 +5,8 @@ const Commands = () => {
   const [commands, setCommands] = useState([]);
   const [customCommand, setCustomCommand] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [highlightedIndices, setHighlightedIndices] = useState([]); // Track all indices of highlighted commands
-  const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0); // Track the current highlight index
+  const [highlightedIndices, setHighlightedIndices] = useState([]);
+  const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
   const lastCommandRef = useRef(null);
   const commandRefs = useRef([]);
 
@@ -46,7 +46,7 @@ const Commands = () => {
     setCommands(sampleHistory);
   }, []);
 
-  const sendCommand = (command) => {
+  const sendCommand = async (command) => {
     const newCommand = {
       text: command,
       time: new Date().toLocaleTimeString(),
@@ -54,11 +54,31 @@ const Commands = () => {
       status: "pending",
     };
 
-    setCommands([...commands, newCommand]);
+    setCommands((prevCommands) => [...prevCommands, newCommand]);
 
-    setTimeout(() => {
-      updateCommandStatus(newCommand.text, "success");
-    }, 2000);
+    // API call to send command
+    try {
+      const response = await fetch("https://agroxsat.onrender.com/backendapi/command/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ command }), // Sending the command as JSON
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // Simulate updating command status after response
+      setTimeout(() => {
+        updateCommandStatus(newCommand.text, "success");
+      }, 2000);
+    } catch (error) {
+      console.error("Error sending command:", error);
+      // Update command status to indicate failure
+      updateCommandStatus(newCommand.text, "error");
+    }
   };
 
   const updateCommandStatus = (text, newStatus) => {
@@ -84,7 +104,7 @@ const Commands = () => {
         cmd.text.toLowerCase().includes(searchQuery.toLowerCase()) ? index : -1
       )
       .filter((index) => index !== -1)
-      .reverse(); // Reverse the order to get latest first
+      .reverse();
 
     setHighlightedIndices(newHighlightedIndices);
     setCurrentHighlightIndex(0);
@@ -97,7 +117,7 @@ const Commands = () => {
 
   const handleNextHighlight = () => {
     if (highlightedIndices.length > 0) {
-      const nextIndex = (currentHighlightIndex + 1) % highlightedIndices.length; // Cycle through indices
+      const nextIndex = (currentHighlightIndex + 1) % highlightedIndices.length;
       setCurrentHighlightIndex(nextIndex);
       const indexToScroll = highlightedIndices[nextIndex];
       commandRefs.current[indexToScroll].scrollIntoView({ behavior: "smooth" });
@@ -151,33 +171,26 @@ const Commands = () => {
                 <li
                   key={index}
                   ref={(el) => (commandRefs.current[index] = el)}
-                  className={`flex ${
-                    cmd.type === "sent" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex ${cmd.type === "sent" ? "justify-end" : "justify-start"}`}
                 >
                   <div
                     className={`max-w-xs px-4 py-2 rounded-lg shadow-md ${
-                      cmd.type === "sent"
-                        ? "bg-black-olive text-white"
-                        : "bg-gray-200 text-gray-900"
+                      cmd.type === "sent" ? "bg-black-olive text-white" : "bg-gray-200 text-gray-900"
                     } ${
                       highlightedIndices.includes(index) &&
-                      currentHighlightIndex ===
-                        highlightedIndices.indexOf(index)
-                        ? "ring-4 ring-blue-300" // Highlight the current command
+                      currentHighlightIndex === highlightedIndices.indexOf(index)
+                        ? "ring-4 ring-blue-300"
                         : ""
                     }`}
                   >
                     <div className="text-sm">{cmd.text}</div>
                     <div className="flex items-center justify-between">
-                      <div className="text-xs text-gray-200 mt-1">
-                        {cmd.time}
-                      </div>
+                      <div className="text-xs text-gray-200 mt-1">{cmd.time}</div>
                       <div className="ml-2 text-xs text-gray-400">
                         {cmd.status === "pending" ? (
-                          <span>✓</span> // Single tick
+                          <span>✓</span>
                         ) : (
-                          <span>✓✓</span> // Double tick on success
+                          <span>✓✓</span>
                         )}
                       </div>
                     </div>
@@ -208,9 +221,7 @@ const Commands = () => {
             >
               <div className="flex justify-between">
                 <span>Capture Image</span>
-                <span className="text-xs text-gray-200">
-                  {new Date().toLocaleTimeString()}
-                </span>
+                <span className="text-xs text-gray-200">{new Date().toLocaleTimeString()}</span>
               </div>
             </button>
             <button
@@ -219,9 +230,7 @@ const Commands = () => {
             >
               <div className="flex justify-between">
                 <span>Adjust Orbit</span>
-                <span className="text-xs text-gray-200">
-                  {new Date().toLocaleTimeString()}
-                </span>
+                <span className="text-xs text-gray-200">{new Date().toLocaleTimeString()}</span>
               </div>
             </button>
           </div>
