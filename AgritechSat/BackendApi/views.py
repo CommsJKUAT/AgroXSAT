@@ -333,10 +333,10 @@ class soilprecipitation(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
 
             
-            soilprecipitation = soilprecipitation(
+            soilprecipitation_data = soilprecipitation(
                 soilprecipitation=soilprecipitation
             )
-            soilprecipitation.save() 
+            soilprecipitation_data.save() 
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         
         except Exception as e:
