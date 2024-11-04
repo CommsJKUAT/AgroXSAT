@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import mapboxgl from "mapbox-gl";
+import * as turf from "@turf/turf";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -27,11 +29,6 @@ const MapboxComponent = () => {
     }
   }, [coordinates]);
 
-  const metersToPixels = (meters, zoom) => {
-    const metersPerPixel = 156543.04 / Math.pow(2, zoom);
-    return meters / metersPerPixel; // Convert meters to pixels
-  };
-
   const initMap = () => {
     const map = new mapboxgl.Map({
       container: "map",
@@ -40,77 +37,50 @@ const MapboxComponent = () => {
       zoom: 13,
     });
 
-    // Create a custom marker
+    // Marker for Ground Station
     const markerElement = document.createElement("div");
-    markerElement.style.backgroundImage = "url('/GSimage.jpg')"; // Ensure this path is correct
+    markerElement.style.backgroundImage = "url('/GSimage.jpg')";
     markerElement.style.width = "50px";
     markerElement.style.height = "50px";
     markerElement.style.backgroundSize = "contain";
-    markerElement.style.backgroundRepeat = "no-repeat"; // Prevents image from repeating
-    markerElement.style.backgroundPosition = "center"; // Centers the image
 
-    // Ensure the map loads before adding the marker
+    new mapboxgl.Marker(markerElement)
+      .setLngLat([coordinates.longitude, coordinates.latitude])
+      .addTo(map);
+
+    // Popup for Ground Station
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
+    markerElement.addEventListener("mouseover", () => {
+      popup.setLngLat([coordinates.longitude, coordinates.latitude]).addTo(map);
+    });
+    markerElement.addEventListener("mouseout", () => {
+      popup.remove();
+    });
+
+    // Draw Circle using Turf.js
     map.on("load", () => {
-      new mapboxgl.Marker(markerElement)
-        .setLngLat([coordinates.longitude, coordinates.latitude])
-        .addTo(map);
+      const center = [coordinates.longitude, coordinates.latitude];
+      const circleRadius = 1000; // radius in meters
+      const circle = turf.circle(center, circleRadius / 1000, { units: "kilometers" });
 
-      // Create a popup
-      const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
-      
-      // Add the popup to the marker
-      markerElement.addEventListener("mouseover", () => {
-        popup.setLngLat([coordinates.longitude, coordinates.latitude]).addTo(map);
-      });
-      markerElement.addEventListener("mouseout", () => {
-        popup.remove();
-      });
-
-      // Add GeoJSON circle
-      map.addSource("circle", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [coordinates.longitude, coordinates.latitude],
-              },
-            },
-          ],
+      map.addSource("circle", { type: "geojson", data: circle });
+      map.addLayer({
+        id: "circle-fill",
+        type: "fill",
+        source: "circle",
+        paint: {
+          "fill-color": "#FF0000",
+          "fill-opacity": 0.35,
         },
       });
 
-      // Use the zoom event to update the circle radius
-      const updateCircleRadius = () => {
-        const zoom = map.getZoom();
-        const radiusInMeters = 1000; // 1000 meters radius
-        const radiusInPixels = metersToPixels(radiusInMeters, zoom);
-
-        if (map.getLayer("circle-fill")) {
-          map.setPaintProperty("circle-fill", "circle-radius", radiusInPixels);
-        } else {
-          map.addLayer({
-            id: "circle-fill",
-            type: "circle",
-            source: "circle",
-            paint: {
-              "circle-radius": radiusInPixels,
-              "circle-color": "#FF0000",
-              "circle-opacity": 0.35,
-            },
-          });
-        }
-      };
-
-      // Initial circle radius setting
-      updateCircleRadius();
-
       // Update circle radius on zoom
-      map.on("zoom", updateCircleRadius);
-      map.on("moveend", updateCircleRadius); // Also update when the map is moved
+      map.on("zoom", () => {
+        const zoomLevel = map.getZoom();
+        const adjustedRadius = zoomLevel < 14 ? 500 : 1000;
+        const updatedCircle = turf.circle(center, adjustedRadius / 1000, { units: "kilometers" });
+        map.getSource("circle").setData(updatedCircle);
+      });
     });
   };
 
