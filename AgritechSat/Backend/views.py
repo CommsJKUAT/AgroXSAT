@@ -78,7 +78,7 @@ def login(request):
     try:
         if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
+                
         else:
             # Convert QueryDict to a dictionary
             data = dict(request.data)
@@ -89,10 +89,6 @@ def login(request):
             print(data_json)
             data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
             data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-            print("Extracted Data:", data)
-
-        
-        print(data)
         username = data.get('username')
         password = data.get('password')
         
