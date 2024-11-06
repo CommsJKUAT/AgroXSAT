@@ -82,9 +82,6 @@ class temperatureapi(APIView):
 
             # Extract temperature and humidity
             temperature_value= data.get('temperature')
-            print(temperature)
-
-            # Simple validation check
             if temperature_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
@@ -263,7 +260,7 @@ class locationapi(APIView):
 
 
 @permission_classes([AllowAny])
-class soilprecipitation(APIView):
+class soilprecipitationapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
             if isinstance(request.data, dict) and '_content' not in request.data:
@@ -280,8 +277,7 @@ class soilprecipitation(APIView):
             
             soilprecipitation_data = soilprecipitation(
                 soilprecipitation=soilprec_value           
-                
-            )
+                            )
             soilprecipitation_data.save()
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         except Exception as e:
