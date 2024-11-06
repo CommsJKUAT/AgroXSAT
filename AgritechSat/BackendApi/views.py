@@ -249,13 +249,8 @@ class locationapi(APIView):
             #change this to suit the data on esp
             # Extract location data
             location_value = data.get('location')
-            
-
-            # Simple validation check
             if location_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-
-           
             location_data = location(
                 location=location_value
                 
@@ -279,12 +274,12 @@ class soilprecipitation(APIView):
                 data_json = data_json[0].replace("\r\n", "") 
                 data = json.loads(data_json) 
               
-            soilprec_value= data.get('smoke')
+            soilprec_value= data.get('soilprecipitation')
             if soilprec_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             soilprecipitation_data = soilprecipitation(
-                soilprecipitation=soilprec_value                
+                soilprecipitation=soilprec_value           
                 
             )
             soilprecipitation_data.save()
