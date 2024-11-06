@@ -162,7 +162,7 @@ class batteryapi(APIView):
 
             # Extract temperature and humidity
             batt= data.get('batt')
-            print(batt)
+            
 
             # Simple validation check
             if batt is None:
@@ -187,29 +187,27 @@ class smokeapi(APIView):
             # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
+                
             else:
                 # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
                 
-                # Extract JSON content from '_content' key
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
+                data_json = data.get('_content', '')  
+                
+                data_json = data_json[0].replace("\r\n", "") 
+                data = json.loads(data_json) 
+                
 
             # Extract temperature and humidity
-            smoke= data.get('smoke')
-            print(batt)
+            smoke_value= data.get('smoke')
+            
 
             # Simple validation check
             if smoke is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             smoke_data = smoke(
-                smoke=smoke
+                smoke=smoke_value
                 
                 
             )
