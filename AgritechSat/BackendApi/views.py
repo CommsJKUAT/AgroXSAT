@@ -147,30 +147,22 @@ class batteryapi(APIView):
             # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
-            else:
-                # Convert QueryDict to a dictionary
-                data = dict(request.data)
-                print("QueryDict Data:", data)
                 
-                # Extract JSON content from '_content' key
+            else:
+                data = dict(request.data)
                 data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
-
-            # Extract temperature and humidity
-            batt= data.get('batt')
+        
+            batt_value= data.get('batt')
             
 
             # Simple validation check
-            if batt is None:
+            if batt_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             batt_data = batt(
-                batt=batt
-                
+                batt=batt_value               
                 
             )
             batt_data.save()
@@ -228,28 +220,16 @@ class soilphapi(APIView):
                 data = request.data
                 print("Parsed as JSON:", data)
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
-
-            # Extract temperature and humidity
+                data_json = data.get('_content', '')  
+                data_json = data_json[0].replace("\r\n", "")  
+                data = json.loads(data_json)  
             soilph_value= data.get('soilph')
-            
-
-            # Simple validation check
             if soilph_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             soilph_data = soilph(
-                soilph=soilph_value
-                
+                soilph=soilph_value              
                 
             )
             soilph_data.save()
