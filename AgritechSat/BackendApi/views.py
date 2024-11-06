@@ -240,15 +240,15 @@ class soilphapi(APIView):
                 print("Extracted Data:", data)
 
             # Extract temperature and humidity
-            soilph= data.get('soilph')
-            print(soilph)
+            soilph_value= data.get('soilph')
+            
 
             # Simple validation check
-            if soilph is None:
+            if soilph_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             soilph_data = soilph(
-                soilph=soilph
+                soilph=soilph_value
                 
                 
             )
