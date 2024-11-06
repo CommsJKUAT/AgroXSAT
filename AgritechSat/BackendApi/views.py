@@ -285,34 +285,23 @@ class locationapi(APIView):
 class soilprecipitation(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
                 data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
-            
-            #change this to suit the data on esp
-            # Extract location data
-            soilprecipitation = data.get('soilprecipitation')
+                
+            soilprecipitation_value = data.get('soilprecipitation')
             
 
-            # Simple validation check
-            if soilprecipitation is None:
+            if soilprecipitation_value  is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
 
             
             soilprecipitation_data = soilprecipitation(
-                soilprecipitation=soilprecipitation
+                soilprecipitation=soilprecipitation_value 
             )
             soilprecipitation_data.save() 
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
