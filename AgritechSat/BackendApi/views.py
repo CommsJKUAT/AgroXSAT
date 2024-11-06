@@ -7,7 +7,7 @@ from rest_framework import status
 from .serializers import UserSerializer
 import json
 from rest_framework.views import APIView
-from Backend.models import smoke,batt,temperature,soilph,soilprecipitation
+from Backend.models import smoke,batt,temperature,soilph,soilprecipitation,location
 from Backend.models import GSCoordinates,Images
 from django.views.decorators.csrf import csrf_exempt 
 from geopy.geocoders import Nominatim
@@ -284,16 +284,16 @@ class locationapi(APIView):
             
             #change this to suit the data on esp
             # Extract location data
-            location = data.get('location')
+            location_value = data.get('location')
             
 
             # Simple validation check
-            if location is None:
+            if location_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
 
            
             location_data = location(
-                location=location
+                location=location_value
                 
             )
             location_data.save() 
