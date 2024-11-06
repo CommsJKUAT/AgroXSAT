@@ -7,7 +7,7 @@ from rest_framework import status
 from .serializers import UserSerializer
 import json
 from rest_framework.views import APIView
-from Backend.models import smoke,batt,temperature,soilph,soilprecipitation,location
+from Backend.models import smoke,batt,temperature,soilph,soilprecipitation,location,humidity
 from Backend.models import GSCoordinates,Images
 from django.views.decorators.csrf import csrf_exempt 
 from geopy.geocoders import Nominatim
@@ -120,13 +120,11 @@ class humidityapi(APIView):
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             humidity_data = humidity(
-                humidity=humidity_value               
+                humidity=humidity_value             
                 
             )
-            humidity_data.save()
-           
-            return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
-        
+            humidity_data.save()           
+            return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)        
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
