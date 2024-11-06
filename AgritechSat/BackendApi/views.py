@@ -24,39 +24,26 @@ def homepage(request):
 class imagesapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
                 print("Parsed as JSON:", data)
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
-
-            # Extract image
+                data_json = data.get('_content', '') 
+                data_json = data_json[0].replace("\r\n", "")  
+                data = json.loads(data_json) 
             image= data.get('image')
             image_name = image.split('/')[0]
             image = image.split('/', 1) 
             image=image[1]
-            # Simple validation check
             if image is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-            
             image_data = Images(
                 image=image,
                 image_name=image_name   
             )
             image_data.save()
-           
             return Response({"message": "Success", "data": image}, status=status.HTTP_200_OK)
-      
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -64,36 +51,22 @@ class imagesapi(APIView):
 class temperatureapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
                 print("Parsed as JSON:", data)
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
-
-            # Extract temperature and humidity
+                data_json = data.get('_content', '') 
+                data_json = data_json[0].replace("\r\n", "")  
+                data = json.loads(data_json) 
             temperature_value= data.get('temperature')
             if temperature_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-            
             temperature_data = temperature(
-                temperature=temperature_value
-                
-                
+                temperature=temperature_value                
             )
             temperature_data.save()
-           
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
-
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -105,20 +78,14 @@ class humidityapi(APIView):
                 data = request.data
             else:
                 data = dict(request.data)
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
+                data_json = data.get('_content', '')  
+                data_json = data_json[0].replace("\r\n", "")  
+                data = json.loads(data_json)  
             humidity_value= data.get('humidity')
-           
-
-            # Simple validation check
             if humidity is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-            
             humidity_data = humidity(
-                humidity=humidity_value             
-                
+                humidity=humidity_value                 
             )
             humidity_data.save()           
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)        
@@ -129,26 +96,19 @@ class humidityapi(APIView):
 class batteryapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                
             else:
                 data = dict(request.data)
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-        
+                data_json = data.get('_content', '') 
+                data_json = data_json[0].replace("\r\n", "")  
+                data = json.loads(data_json)  
             batt_value= data.get('batt')
-            
 
-            # Simple validation check
             if batt_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-            
             batt_data = batt(
-                batt=batt_value               
-                
+                batt=batt_value                  
             )
             batt_data.save()
            
@@ -161,35 +121,23 @@ class batteryapi(APIView):
 class smokeapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                
                 data_json = data.get('_content', '')  
-                
                 data_json = data_json[0].replace("\r\n", "") 
                 data = json.loads(data_json) 
                 
 
-            # Extract temperature and humidity
             smoke_value= data.get('smoke')
-            
-
-            # Simple validation check
             if smoke is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             smoke_data = smoke(
                 smoke=smoke_value
-                
-                
             )
             smoke_data.save()
-           
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         
         except Exception as e:
@@ -210,13 +158,10 @@ class soilphapi(APIView):
             soilph_value= data.get('soilph')
             if soilph_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-            
             soilph_data = soilph(
-                soilph=soilph_value              
-                
+                soilph=soilph_value                 
             )
             soilph_data.save()
-           
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
         
         except Exception as e:
@@ -227,30 +172,19 @@ class soilphapi(APIView):
 class locationapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
+                data_json = data.get('_content', '') 
+                data_json = data_json[0].replace("\r\n", "")  
+                data = json.loads(data_json) 
             
-            #change this to suit the data on esp
-            # Extract location data
             location_value = data.get('location')
             if location_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             location_data = location(
-                location=location_value
-                
+                location=location_value  
             )
             location_data.save() 
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
@@ -285,7 +219,6 @@ class soilprecipitationapi(APIView):
 
 
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX')
-
 @permission_classes([AllowAny])
 class groundstationCoordinates(APIView):
     def post(self, request, *args, **kwargs):
@@ -299,21 +232,13 @@ class groundstationCoordinates(APIView):
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
             latitude = float(latitude)
             longitude = float(longitude)
-
-            
-            
             mapbox_url = f"https://api.mapbox.com/search/geocode/v6/reverse?longitude={longitude}&latitude={latitude}&access_token={MAPBOX_ACCESS_TOKEN}"
             response = requests.get(mapbox_url)
-
             if response.status_code == 200:
                 location_data = response.json()
-
-                # Extract place_formatted from the response if available
                 features = location_data.get("features", [])
                 if features:
                     place_formatted = features[0].get("properties", {}).get("place_formatted", "Unknown")
-
-                    # Split place_formatted into place and country
                     place_parts = place_formatted.split(", ")
                     if len(place_parts) >= 2:
                         place = ", ".join(place_parts[:-1])  # Join all except last as place
@@ -321,7 +246,6 @@ class groundstationCoordinates(APIView):
                     else:
                         place = place_formatted
                         country = "Unknown"
-
                     return Response({
                         "status": "success",
                         "location": {
@@ -351,9 +275,6 @@ def get_gs(request):
             'latitude': None,
             'longitude': None
         })
-    
-
-
 @permission_classes([AllowAny])
 class save_gs_coordinates(APIView):
     def post(self, request, *args, **kwargs):
@@ -362,24 +283,16 @@ class save_gs_coordinates(APIView):
                 data = request.data
                 print("Parsed as JSON:", data)
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
                 data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                print(data_json)
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
             latitude = data.get('latitude')
             longitude = data.get('longitude')
             print(latitude)
             print(longitude)
             if latitude is None or longitude is None:
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
-            
-                        
             coords, created = GSCoordinates.objects.update_or_create(
                 id=1,  # Assuming you want to keep only one record
                 defaults={
