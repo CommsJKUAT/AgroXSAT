@@ -275,25 +275,23 @@ class soilprecipitation(APIView):
                 data = request.data
             else:
                 data = dict(request.data)
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                
-            soilprecipitation_value = data.get('soilprecipitation')
-            
-
-            if soilprecipitation_value  is None:
+                data_json = data.get('_content', '')  
+                data_json = data_json[0].replace("\r\n", "") 
+                data = json.loads(data_json) 
+              
+            soilprec_value= data.get('smoke')
+            if soilprec_value is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-
             
             soilprecipitation_data = soilprecipitation(
-                soilprecipitation=soilprecipitation_value 
+                soilprecipitation=soilprec_value                
+                
             )
-            soilprecipitation_data.save() 
+            soilprecipitation_data.save()
             return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
-        
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX')
 
