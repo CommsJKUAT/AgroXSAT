@@ -104,33 +104,23 @@ class temperatureapi(APIView):
 class humidityapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
             else:
-                # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
-                
-                # Extract JSON content from '_content' key
                 data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
                 print(data_json)
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
-
-            # Extract temperature and humidity
-            humidity= data.get('humidity')
-            print(humidity)
+            humidity_value= data.get('humidity')
+           
 
             # Simple validation check
             if humidity is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             
             humidity_data = humidity(
-                humidity=humidity
-                
+                humidity=humidity_value               
                 
             )
             humidity_data.save()
@@ -215,10 +205,8 @@ class smokeapi(APIView):
 class soilphapi(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
             else:
                 data = dict(request.data)
                 data_json = data.get('_content', '')  
