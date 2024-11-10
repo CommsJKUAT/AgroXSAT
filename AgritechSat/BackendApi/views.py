@@ -299,7 +299,7 @@ def get_gs(request):
         })
 
 def get_location(request):
-    coords = Location.objects.order_by('-created_at').first()  # Order by the latest entry, adjust if necessary
+    coords = Location.objects.order_by('-created_at').first() 
     
     if coords:
         return JsonResponse({
