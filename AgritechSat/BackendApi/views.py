@@ -171,38 +171,48 @@ class soilphapi(APIView):
 
 @permission_classes([AllowAny])
 class locationapi(APIView):
-    def post(self, request, *args, **kwargs):
+     def post(self, request, *args, **kwargs):
         try:
-            if isinstance(request.data, dict) and '_content' not in request.data:
-                data = request.data
+            # Checking if the request data is in JSON format
+            if isinstance(request.data, dict):
+                data = request.data  # Already parsed JSON, so directly use it
                 print("Parsed as JSON:", data)
             else:
+                # If the data isn't a dict (which it should be if it's JSON), attempt to handle the '_content' key
                 data = dict(request.data)
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-            
+                data_json = data.get('_content', '')  # Handle the '_content' field if it's a querydict
+                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines
+                data = json.loads(data_json)  # Convert to Python dict if it's a JSON string
+
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-            print(latitude)
-            print(longitude)
-            
+
+            print("Latitude:", latitude)
+            print("Longitude:", longitude)
+
+            # Check if latitude and longitude are provided
             if latitude is None or longitude is None:
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
-    
-            # Create the coordinates record
+
+            # Creating a new location record in the database
             location.objects.create(
                 latitude=float(latitude),
                 longitude=float(longitude),
-                timestamp=timezone.now(),  # Optional: To track when the record was created
+                timestamp=timezone.now(),  # Optional: Track when the record was created
             )
-    
+
             return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
-    
-    except ValueError:
-        return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
-    except json.JSONDecodeError:
-        return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        except ValueError:
+            # Handle invalid latitude/longitude format
+            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
+        except json.JSONDecodeError:
+            # Handle invalid JSON format
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # General error handling for unexpected errors
+            print(f"Unexpected error: {e}")
+            return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @permission_classes([AllowAny])
