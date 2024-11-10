@@ -11,6 +11,8 @@ const MapboxComponent = () => {
   const [secondCoordinates, setSecondCoordinates] = useState({ latitude: null, longitude: null });
   const [radius, setRadius] = useState(1000); // default radius
   const [map, setMap] = useState(null);
+  const [secondMarker, setSecondMarker] = useState(null); // Store second marker instance
+  const [previousSecondCoordinates, setPreviousSecondCoordinates] = useState(null); // To track previous coordinates
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -25,7 +27,7 @@ const MapboxComponent = () => {
 
     const fetchSecondCoordinates = async () => {
       try {
-        const response = await axios.get("https://agroxsat.onrender.com/backendapi/");
+        const response = await axios.get("https://agroxsat.onrender.com/backendapi/satLocation/");
         const { latitude, longitude } = response.data;
         setSecondCoordinates({ latitude, longitude });
       } catch (error) {
@@ -71,9 +73,11 @@ const MapboxComponent = () => {
     secondMarkerElement.style.height = "30px";
     secondMarkerElement.style.backgroundSize = "contain";
 
-    const secondMarker = new mapboxgl.Marker(secondMarkerElement)
+    const marker = new mapboxgl.Marker(secondMarkerElement)
       .setLngLat([secondCoordinates.longitude, secondCoordinates.latitude])
       .addTo(map);
+
+    setSecondMarker(marker); // Save reference to second marker
 
     // Popup for Ground Station
     const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
@@ -118,11 +122,43 @@ const MapboxComponent = () => {
     if (map) {
       const center = [coordinates.longitude, coordinates.latitude];
       const updatedCircle = turf.circle(center, newRadius / 1000, { units: "kilometers" });
-      
+
       // Update the circle source data
       map.getSource("circle").setData(updatedCircle);
     }
   };
+
+  // Update the second marker when new coordinates are fetched
+  useEffect(() => {
+    if (secondMarker && secondCoordinates.latitude && secondCoordinates.longitude) {
+      if (previousSecondCoordinates) {
+        // If previous coordinates exist, you can draw a line joining the markers
+        const line = turf.lineString([
+          [previousSecondCoordinates.longitude, previousSecondCoordinates.latitude],
+          [secondCoordinates.longitude, secondCoordinates.latitude],
+        ]);
+
+        // Draw the line on the map
+        if (map.getSource("line-source")) {
+          map.getSource("line-source").setData(line);
+        } else {
+          map.addSource("line-source", { type: "geojson", data: line });
+          map.addLayer({
+            id: "line-layer",
+            type: "line",
+            source: "line-source",
+            paint: {
+              "line-color": "#0000FF",
+              "line-width": 3,
+            },
+          });
+        }
+      }
+
+      secondMarker.setLngLat([secondCoordinates.longitude, secondCoordinates.latitude]); // Update marker position
+      setPreviousSecondCoordinates(secondCoordinates); // Update previous coordinates
+    }
+  }, [secondCoordinates]);
 
   if (!coordinates.latitude || !coordinates.longitude || !secondCoordinates.latitude || !secondCoordinates.longitude) {
     return <div>Loading map...</div>;

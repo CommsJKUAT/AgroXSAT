@@ -299,7 +299,8 @@ def get_gs(request):
         })
 
 def get_location(request):
-    coords = location.objects.first()
+    coords = Location.objects.order_by('-created_at').first()  # Order by the latest entry, adjust if necessary
+    
     if coords:
         return JsonResponse({
             'latitude': coords.latitude,
@@ -310,6 +311,7 @@ def get_location(request):
             'latitude': None,
             'longitude': None
         })
+        
 @permission_classes([AllowAny])
 class save_gs_coordinates(APIView):
     def post(self, request, *args, **kwargs):
