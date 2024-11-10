@@ -3,87 +3,103 @@ import axios from "axios";
 import mapboxgl from "mapbox-gl";
 import * as turf from "@turf/turf";
 import "mapbox-gl/dist/mapbox-gl.css";
-console.log("Mapbox Access Token:", import.meta.env.VITE_MAPBOX_TOKEN);
+
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const MapboxComponent = () => {
   const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
-  const [secondMarkerCoordinates, setSecondMarkerCoordinates] = useState({ latitude: null, longitude: null });
-  const [circleRadius, setCircleRadius] = useState(1000); // Default radius in meters
+  const [secondCoordinates, setSecondCoordinates] = useState({ latitude: null, longitude: null });
+  const [radius, setRadius] = useState(1000); // default radius
   const [map, setMap] = useState(null);
 
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
-        // Fetch first coordinates
         const response = await axios.get("https://agroxsat.onrender.com/backendapi/");
         const { latitude, longitude } = response.data;
         setCoordinates({ latitude, longitude });
-
-        // Fetch second marker coordinates from a different API
-        const secondResponse = await axios.get("https://agroxsat.onrender.com/backendapi/");
-        const { latitude: secondLat, longitude: secondLng } = secondResponse.data;
-        setSecondMarkerCoordinates({ latitude: secondLat, longitude: secondLng });
       } catch (error) {
         console.error("Error fetching coordinates:", error);
       }
     };
 
+    const fetchSecondCoordinates = async () => {
+      try {
+        const response = await axios.get("https://agroxsat.onrender.com/backendapi/");
+        const { latitude, longitude } = response.data;
+        setSecondCoordinates({ latitude, longitude });
+      } catch (error) {
+        console.error("Error fetching second coordinates:", error);
+      }
+    };
+
     fetchCoordinates();
-    const intervalId = setInterval(fetchCoordinates, 5000); // fetch every 5 seconds
-    return () => clearInterval(intervalId);
+    fetchSecondCoordinates();
   }, []);
 
   useEffect(() => {
-    if (coordinates.latitude && coordinates.longitude) {
+    if (coordinates.latitude && coordinates.longitude && secondCoordinates.latitude && secondCoordinates.longitude) {
       initMap();
     }
-  }, [coordinates]);
+  }, [coordinates, secondCoordinates]);
 
   const initMap = () => {
-    const newMap = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [coordinates.longitude, coordinates.latitude],
       zoom: 13,
     });
-    setMap(newMap);
+
+    setMap(map); // Store the map instance
 
     // Marker for Ground Station
-    const groundStationMarkerElement = document.createElement("div");
-    groundStationMarkerElement.style.backgroundImage = "url('/GSimage.jpg')";
-    groundStationMarkerElement.style.width = "50px";
-    groundStationMarkerElement.style.height = "50px";
-    groundStationMarkerElement.style.backgroundSize = "contain";
+    const markerElement = document.createElement("div");
+    markerElement.style.backgroundImage = "url('/GSimage.jpg')";
+    markerElement.style.width = "50px";
+    markerElement.style.height = "50px";
+    markerElement.style.backgroundSize = "contain";
 
-    new mapboxgl.Marker(groundStationMarkerElement)
+    new mapboxgl.Marker(markerElement)
       .setLngLat([coordinates.longitude, coordinates.latitude])
-      .addTo(newMap);
+      .addTo(map);
 
-    // Second marker for dynamic position
-    const dynamicMarkerElement = document.createElement("div");
-    dynamicMarkerElement.style.backgroundImage = "url('/dynamicMarker.jpg')";
-    dynamicMarkerElement.style.width = "40px";
-    dynamicMarkerElement.style.height = "40px";
-    dynamicMarkerElement.style.backgroundSize = "contain";
+    // Marker for Second Location (Satellite)
+    const secondMarkerElement = document.createElement("div");
+    secondMarkerElement.style.backgroundImage = "url('/satlogo3.png')";
+    secondMarkerElement.style.width = "30px";
+    secondMarkerElement.style.height = "30px";
+    secondMarkerElement.style.backgroundSize = "contain";
 
-    const dynamicMarker = new mapboxgl.Marker(dynamicMarkerElement)
-      .setLngLat([secondMarkerCoordinates.longitude, secondMarkerCoordinates.latitude])
-      .addTo(newMap);
+    const secondMarker = new mapboxgl.Marker(secondMarkerElement)
+      .setLngLat([secondCoordinates.longitude, secondCoordinates.latitude])
+      .addTo(map);
 
-    // Draw initial circle
-    drawCircle(newMap, coordinates.longitude, coordinates.latitude, circleRadius);
-  };
+    // Popup for Ground Station
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
+    markerElement.addEventListener("mouseover", () => {
+      popup.setLngLat([coordinates.longitude, coordinates.latitude]).addTo(map);
+    });
+    markerElement.addEventListener("mouseout", () => {
+      popup.remove();
+    });
 
-  const drawCircle = (mapInstance, longitude, latitude, radius) => {
-    const center = [longitude, latitude];
-    const circle = turf.circle(center, radius / 1000, { units: "kilometers" });
+    // Popup for Second Marker (Satellite)
+    const secondPopup = new mapboxgl.Popup({ offset: 25 }).setText("Satellite");
+    secondMarkerElement.addEventListener("mouseover", () => {
+      secondPopup.setLngLat([secondCoordinates.longitude, secondCoordinates.latitude]).addTo(map);
+    });
+    secondMarkerElement.addEventListener("mouseout", () => {
+      secondPopup.remove();
+    });
 
-    if (mapInstance.getSource("circle")) {
-      mapInstance.getSource("circle").setData(circle);
-    } else {
-      mapInstance.addSource("circle", { type: "geojson", data: circle });
-      mapInstance.addLayer({
+    // Draw Circle using Turf.js
+    map.on("load", () => {
+      const center = [coordinates.longitude, coordinates.latitude];
+      const circle = turf.circle(center, radius / 1000, { units: "kilometers" });
+
+      map.addSource("circle", { type: "geojson", data: circle });
+      map.addLayer({
         id: "circle-fill",
         type: "fill",
         source: "circle",
@@ -92,34 +108,50 @@ const MapboxComponent = () => {
           "fill-opacity": 0.35,
         },
       });
+    });
+  };
+
+  // Function to handle radius change and update the circle
+  const handleRadiusChange = (newRadius) => {
+    setRadius(newRadius);
+
+    if (map) {
+      const center = [coordinates.longitude, coordinates.latitude];
+      const updatedCircle = turf.circle(center, newRadius / 1000, { units: "kilometers" });
+      
+      // Update the circle source data
+      map.getSource("circle").setData(updatedCircle);
     }
   };
 
-  useEffect(() => {
-    if (map && coordinates.latitude && coordinates.longitude) {
-      drawCircle(map, coordinates.longitude, coordinates.latitude, circleRadius);
-    }
-  }, [circleRadius, map, coordinates]);
-
-  const handleRadiusChange = (e) => {
-    const newRadius = parseInt(e.target.value) || 1000; // Default to 1000 if input is invalid
-    setCircleRadius(newRadius);
-  };
-
-  if (!coordinates.latitude || !coordinates.longitude) {
+  if (!coordinates.latitude || !coordinates.longitude || !secondCoordinates.latitude || !secondCoordinates.longitude) {
     return <div>Loading map...</div>;
   }
 
   return (
-    <div>
-      <div id="map" style={{ width: "100%", height: "80vh" }}></div>
-      <div style={{ marginTop: "10px" }}>
-        <label>Circle Radius (meters): </label>
+    <div id="map" style={{ width: "100%", height: "100vh", position: "relative" }}>
+      {/* Input for radius - Always visible */}
+      <div
+        className="radius-input"
+        style={{
+          position: "absolute",
+          top: "20px", // Adjusted for visibility
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+          backgroundColor: "white",
+          padding: "10px",
+          borderRadius: "5px",
+        }}
+      >
         <input
           type="number"
-          value={circleRadius}
-          onChange={handleRadiusChange}
-          placeholder="Enter radius in meters"
+          value={radius}
+          onChange={(e) => handleRadiusChange(e.target.value)}
+          min={100}
+          max={5000}
+          step={100}
+          style={{ padding: "5px", fontSize: "14px", width: "150px" }}
         />
       </div>
     </div>
