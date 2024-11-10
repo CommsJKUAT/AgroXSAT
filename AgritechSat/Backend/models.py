@@ -75,7 +75,8 @@ class soilprecipitation(models.Model):
     def __str__(self):
         return f"batt: {self.batt}, Time: {self.timestamp}"
 class location(models.Model):
-    location = models.TextField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     timestamp = models.DateTimeField(auto_now_add=True)
     
 

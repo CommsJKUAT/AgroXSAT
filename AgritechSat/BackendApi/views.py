@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import os
 from geopy.geocoders import MapBox
 import requests
+from django.utils import timezone
 load_dotenv()
 
 def homepage(request):
@@ -174,23 +175,33 @@ class locationapi(APIView):
         try:
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
+                print("Parsed as JSON:", data)
             else:
                 data = dict(request.data)
-                data_json = data.get('_content', '') 
-                data_json = data_json[0].replace("\r\n", "")  
-                data = json.loads(data_json) 
-            
-            location_value = data.get('location')
-            if location_value is None:
-                return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-            location_data = location(
-                location=location_value  
+                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
+                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
+                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+            print(latitude)
+            print(longitude)
+            if latitude is None or longitude is None:
+                return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
+            coords = location.objects.create(
+            latitude=float(latitude),
+            longitude=float(longitude),
+            timestamp=timezone.now(),  # Optional: To track when the record was created
             )
-            location_data.save() 
-            return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
-        
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            if created:
+                return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"success": "Coordinates updated successfully"}, status=status.HTTP_200_OK)
+
+        except ValueError:
+            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @permission_classes([AllowAny])
@@ -265,6 +276,19 @@ class groundstationCoordinates(APIView):
 
 def get_gs(request):
     coords = GSCoordinates.objects.first()
+    if coords:
+        return JsonResponse({
+            'latitude': coords.latitude,
+            'longitude': coords.longitude
+        })
+    else:
+        return JsonResponse({
+            'latitude': None,
+            'longitude': None
+        })
+
+def get_location(request):
+    coords = location.objects.first()
     if coords:
         return JsonResponse({
             'latitude': coords.latitude,
