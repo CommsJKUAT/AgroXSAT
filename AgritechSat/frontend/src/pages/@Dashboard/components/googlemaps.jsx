@@ -66,7 +66,7 @@ const MapboxComponent = () => {
 
     // Marker for Second Location (Satellite)
     const secondMarkerElement = document.createElement("div");
-    secondMarkerElement.style.backgroundImage = "url('/satlogo3.png')";
+    secondMarkerElement.style.backgroundImage = "url('/cubesat.jpg')";
     secondMarkerElement.style.width = "30px";
     secondMarkerElement.style.height = "30px";
     secondMarkerElement.style.backgroundSize = "contain";
