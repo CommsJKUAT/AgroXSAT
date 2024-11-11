@@ -43,7 +43,7 @@ const MapboxComponent = () => {
     if (coordinates.latitude && coordinates.longitude && secondCoordinates.latitude && secondCoordinates.longitude) {
       initMap();
     }
-  }, [coordinates, secondCoordinates]);
+  }, [coordinates, secondCoordinates]); // Only runs once both coordinates are available
 
   const initMap = () => {
     const map = new mapboxgl.Map({
@@ -113,6 +113,15 @@ const MapboxComponent = () => {
         },
       });
     });
+
+    // Calculate the distance between coordinates using Turf.js
+    const from = [coordinates.longitude, coordinates.latitude];
+    const to = [secondCoordinates.longitude, secondCoordinates.latitude];
+    const distance = turf.distance(from, to, { units: "kilometers" });
+
+    // Set zoom level based on distance
+    const zoomLevel = Math.max(13 - distance / 10, 5); // Adjust zoom level dynamically
+    map.zoomTo(zoomLevel, { duration: 1000 });
   };
 
   // Function to handle radius change and update the circle
