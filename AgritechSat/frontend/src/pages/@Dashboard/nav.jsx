@@ -39,7 +39,7 @@ const DashboardNav = () => {
             className="rounded-lg h-7"
           />
           <span className="self-center text-lg font-semibold whitespace-nowrap text-white">
-            AgriXSAT
+            Agri X Cubesat
           </span>
         </a>
         <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
