@@ -16,6 +16,7 @@ import os
 from geopy.geocoders import MapBox
 import requests
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 load_dotenv()
 
 def homepage(request):
@@ -309,34 +310,45 @@ class PayloadHandling(APIView):
         
 #satellite location
 @permission_classes([AllowAny])
-class saTracker(APIView):
+class SaTracker(APIView):
     def post(self, request, *args, **kwargs):
         try:
+            # Parse incoming data
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
             else:
                 data = dict(request.data)
-                data_json = data.get('_content', '') 
-                data_json = data_json[0].replace("\r\n", "") 
-                data = json.loads(data_json) 
+                data_json = data.get('_content', '')
+                if isinstance(data_json, list):
+                    data_json = data_json[0].replace("\r\n", "")
+                data = json.loads(data_json)
+
+            # Extract latitude and longitude from data
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-            print(latitude)
-            print(longitude)
+
+            # Validate presence of coordinates
             if latitude is None or longitude is None:
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
-            coords, created = Coordinates.objects.create(
-                latitude=latitude,
-                longitude=longitude
-            )
 
-            if created:
-                return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"success": "Coordinates updated successfully"}, status=status.HTTP_200_OK)
+            # Save coordinates
+            try:
+                coordinates = Coordinates.objects.create(
+                    latitude=float(latitude),
+                    longitude=float(longitude)
+                )
+                return Response(
+                    {
+                        "success": "Coordinates saved successfully",
+                        "latitude": coordinates.latitude,
+                        "longitude": coordinates.longitude,
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            except ValidationError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        except ValueError:
-            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
         except json.JSONDecodeError:
             return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
