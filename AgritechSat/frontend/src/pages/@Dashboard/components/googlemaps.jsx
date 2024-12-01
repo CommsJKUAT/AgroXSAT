@@ -12,7 +12,7 @@ const MapboxComponent = () => {
   const [radius, setRadius] = useState(1000); // default radius
   const [map, setMap] = useState(null);
   const [secondMarker, setSecondMarker] = useState(null); // Store second marker instance
-  const [previousSecondCoordinates, setPreviousSecondCoordinates] = useState(null); // To track previous coordinates
+  const [coordinatesHistory, setCoordinatesHistory] = useState([]); // Store the history of second coordinates
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -35,9 +35,19 @@ const MapboxComponent = () => {
       }
     };
 
+    // Fetch initial coordinates
     fetchCoordinates();
     fetchSecondCoordinates();
-  }, []);
+
+    // Set an interval to fetch new coordinates every minute
+    const intervalId = setInterval(() => {
+      fetchCoordinates();
+      fetchSecondCoordinates();
+    }, 60000); // 60000 ms = 1 minute
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []); // Empty dependency array to run only on mount
 
   useEffect(() => {
     if (coordinates.latitude && coordinates.longitude && secondCoordinates.latitude && secondCoordinates.longitude) {
@@ -79,24 +89,6 @@ const MapboxComponent = () => {
 
     setSecondMarker(marker); // Save reference to second marker
 
-    // Popup for Ground Station
-    const popup = new mapboxgl.Popup({ offset: 25 }).setText("The Ground Station");
-    markerElement.addEventListener("mouseover", () => {
-      popup.setLngLat([coordinates.longitude, coordinates.latitude]).addTo(map);
-    });
-    markerElement.addEventListener("mouseout", () => {
-      popup.remove();
-    });
-
-    // Popup for Second Marker (Satellite)
-    const secondPopup = new mapboxgl.Popup({ offset: 25 }).setText("Satellite");
-    secondMarkerElement.addEventListener("mouseover", () => {
-      secondPopup.setLngLat([secondCoordinates.longitude, secondCoordinates.latitude]).addTo(map);
-    });
-    secondMarkerElement.addEventListener("mouseout", () => {
-      secondPopup.remove();
-    });
-
     // Draw Circle using Turf.js
     map.on("load", () => {
       const center = [coordinates.longitude, coordinates.latitude];
@@ -113,15 +105,6 @@ const MapboxComponent = () => {
         },
       });
     });
-
-    // Calculate the distance between coordinates using Turf.js
-    const from = [coordinates.longitude, coordinates.latitude];
-    const to = [secondCoordinates.longitude, secondCoordinates.latitude];
-    const distance = turf.distance(from, to, { units: "kilometers" });
-
-    // Set zoom level based on distance
-    const zoomLevel = Math.max(13 - distance / 10, 5); // Adjust zoom level dynamically
-    map.zoomTo(zoomLevel, { duration: 1000 });
   };
 
   // Function to handle radius change and update the circle
@@ -137,37 +120,36 @@ const MapboxComponent = () => {
     }
   };
 
-  // Update the second marker when new coordinates are fetched
+  // Update the second marker and draw the trajectory line
   useEffect(() => {
     if (secondMarker && secondCoordinates.latitude && secondCoordinates.longitude) {
-      if (previousSecondCoordinates) {
-        // If previous coordinates exist, you can draw a line joining the markers
-        const line = turf.lineString([
-          [previousSecondCoordinates.longitude, previousSecondCoordinates.latitude],
-          [secondCoordinates.longitude, secondCoordinates.latitude],
-        ]);
+      // Update the second marker's position
+      secondMarker.setLngLat([secondCoordinates.longitude, secondCoordinates.latitude]);
 
-        // Draw the line on the map
-        if (map.getSource("line-source")) {
-          map.getSource("line-source").setData(line);
-        } else {
-          map.addSource("line-source", { type: "geojson", data: line });
-          map.addLayer({
-            id: "line-layer",
-            type: "line",
-            source: "line-source",
-            paint: {
-              "line-color": "#0000FF",
-              "line-width": 3,
-            },
-          });
-        }
+      // Add the new coordinate to the coordinates history
+      const updatedCoordinatesHistory = [...coordinatesHistory, secondCoordinates];
+      setCoordinatesHistory(updatedCoordinatesHistory);
+
+      // Draw the line representing the trajectory of the satellite
+      const line = turf.lineString(updatedCoordinatesHistory.map(coord => [coord.longitude, coord.latitude]));
+
+      // Update the line on the map (or add it if it doesn't exist)
+      if (map.getSource("line-source")) {
+        map.getSource("line-source").setData(line);
+      } else {
+        map.addSource("line-source", { type: "geojson", data: line });
+        map.addLayer({
+          id: "line-layer",
+          type: "line",
+          source: "line-source",
+          paint: {
+            "line-color": "#00FF00", // Green line
+            "line-width": 3,
+          },
+        });
       }
-
-      secondMarker.setLngLat([secondCoordinates.longitude, secondCoordinates.latitude]); // Update marker position
-      setPreviousSecondCoordinates(secondCoordinates); // Update previous coordinates
     }
-  }, [secondCoordinates]);
+  }, [secondCoordinates]); // Runs every time secondCoordinates are updated
 
   if (!coordinates.latitude || !coordinates.longitude || !secondCoordinates.latitude || !secondCoordinates.longitude) {
     return <div>Loading map...</div>;

@@ -110,18 +110,17 @@ def get_gs(request):
     
 #tracks the satellite by giving the latest coordinates in the db
 def get_location(request):
-    coords = Coordinates.objects.order_by('-timestamp').first() 
+    coords = Coordinates.objects.all()  
     
-    if coords:
-        return JsonResponse({
-            'latitude': coords.latitude,
-            'longitude': coords.longitude
-        })
-    else:
-        return JsonResponse({
-            'latitude': None,
-            'longitude': None
-        })
+    
+    if coords.exists():
+        coordinates_list = [
+            {'latitude': coord.latitude, 'longitude': coord.longitude} for coord in coords
+        ]
+        return JsonResponse({'coordinates': coordinates_list})
+    
+    
+    return JsonResponse({'coordinates': []})
         
 @permission_classes([AllowAny])
 class save_gs_coordinates(APIView):
