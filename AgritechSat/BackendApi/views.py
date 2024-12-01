@@ -181,6 +181,7 @@ class CommandView(APIView):
         return JsonResponse({"command": command_to_return}, status=status.HTTP_200_OK)
     
 #telemetry
+@permission_classes([AllowAny])  
 class TelemetryHandling(APIView):
 
     def post(self, request, *args, **kwargs):
