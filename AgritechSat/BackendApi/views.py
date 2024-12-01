@@ -181,8 +181,8 @@ class CommandView(APIView):
         return JsonResponse({"command": command_to_return}, status=status.HTTP_200_OK)
     
 #telemetry
-@permission_classes([AllowAny])
 class TelemetryHandling(APIView):
+
     def post(self, request, *args, **kwargs):
         try:
             data = self.parse_request_data(request)
@@ -202,7 +202,6 @@ class TelemetryHandling(APIView):
             if None in [sat_temp, batt, pressure, yaw, pitch, roll, eps_temp, voltage, current]:
                 return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-            
             telemetry = Telemetry.objects.create(
                 sat_temp=sat_temp,
                 batt=batt,
@@ -234,6 +233,33 @@ class TelemetryHandling(APIView):
 
         except json.JSONDecodeError:
             return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Retrieve the latest telemetry data
+            latest_telemetry = Telemetry.objects.latest('created_at')  # Assuming `created_at` is the field storing the timestamp
+            
+            return Response(
+                {
+                    "message": "Latest telemetry retrieved successfully",
+                    "telemetry_id": latest_telemetry.id,
+                    "sat_temp": latest_telemetry.sat_temp,
+                    "batt": latest_telemetry.batt,
+                    "pressure": latest_telemetry.pressure,
+                    "yaw": latest_telemetry.yaw,
+                    "pitch": latest_telemetry.pitch,
+                    "roll": latest_telemetry.roll,
+                    "eps_temp": latest_telemetry.eps_temp,
+                    "voltage": latest_telemetry.voltage,
+                    "current": latest_telemetry.current,
+                    "created_at": latest_telemetry.created_at 
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Telemetry.DoesNotExist:
+            return Response({"error": "No telemetry data found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
