@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import os
 from geopy.geocoders import MapBox
 import requests
+from django.utils import timezone
 load_dotenv()
 
 def homepage(request):
@@ -170,27 +171,48 @@ class soilphapi(APIView):
 
 @permission_classes([AllowAny])
 class locationapi(APIView):
-    def post(self, request, *args, **kwargs):
+     def post(self, request, *args, **kwargs):
         try:
-            if isinstance(request.data, dict) and '_content' not in request.data:
-                data = request.data
+            # Checking if the request data is in JSON format
+            if isinstance(request.data, dict):
+                data = request.data  # Already parsed JSON, so directly use it
+                print("Parsed as JSON:", data)
             else:
+                # If the data isn't a dict (which it should be if it's JSON), attempt to handle the '_content' key
                 data = dict(request.data)
-                data_json = data.get('_content', '') 
-                data_json = data_json[0].replace("\r\n", "")  
-                data = json.loads(data_json) 
-            
-            location_value = data.get('location')
-            if location_value is None:
-                return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
-            location_data = location(
-                location=location_value  
+                data_json = data.get('_content', '')  # Handle the '_content' field if it's a querydict
+                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines
+                data = json.loads(data_json)  # Convert to Python dict if it's a JSON string
+
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+
+            print("Latitude:", latitude)
+            print("Longitude:", longitude)
+
+            # Check if latitude and longitude are provided
+            if latitude is None or longitude is None:
+                return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Creating a new location record in the database
+            location.objects.create(
+                latitude=float(latitude),
+                longitude=float(longitude),
+                timestamp=timezone.now(),  # Optional: Track when the record was created
             )
-            location_data.save() 
-            return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
-        
+
+            return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
+
+        except ValueError:
+            # Handle invalid latitude/longitude format
+            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
+        except json.JSONDecodeError:
+            # Handle invalid JSON format
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # General error handling for unexpected errors
+            print(f"Unexpected error: {e}")
+            return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @permission_classes([AllowAny])
@@ -275,6 +297,21 @@ def get_gs(request):
             'latitude': None,
             'longitude': None
         })
+
+def get_location(request):
+    coords = location.objects.order_by('-timestamp').first() 
+    
+    if coords:
+        return JsonResponse({
+            'latitude': coords.latitude,
+            'longitude': coords.longitude
+        })
+    else:
+        return JsonResponse({
+            'latitude': None,
+            'longitude': None
+        })
+        
 @permission_classes([AllowAny])
 class save_gs_coordinates(APIView):
     def post(self, request, *args, **kwargs):
