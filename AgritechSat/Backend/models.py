@@ -30,7 +30,7 @@ class GSCoordinates(models.Model):
     def __str__(self):
         return f"Lat: {self.latitude}, Long: {self.longitude}"    
 
-class Payload(models.model):
+class Payload(models.Model):
     soil_moisture = models.FloatField()
     temperature = models.FloatField()
     humidity = models.FloatField()
@@ -38,11 +38,13 @@ class Payload(models.model):
     soil_ph = models.FloatField()
 
     def __str__(self):
-        return f"smoisture: {self.soil_moisture}, 
-        temp: {self.temperature}, hum: {self.humidity},
-        slvl: {self.smoke_level}, sph: {self.soil_ph}"
+       return (
+        f"smoisture: {self.soil_moisture}, temp: {self.temperature}, "
+        f"hum: {self.humidity}, slvl: {self.smoke_level}, sph: {self.soil_ph}"
+        )
+
     
-class telemetry(models.Model):
+class Telemetry(models.Model):
     sat_temp =models.FloatField()
     batt =models.FloatField()
     pressure =models.FloatField()
@@ -54,7 +56,8 @@ class telemetry(models.Model):
     current =models.FloatField()
     
     def __str__(self):
-        return f"stemp: {self.sat_temp}, 
-        batt: {self.batt}, prss: {self.pressure},
-        yaw: {self.yaw}, pitch: {self.pitch}, roll: {self.roll},
-        etemp: {self.eps_temp}, vol: {self.voltage}, cur: {self.current}"
+        return (
+            f"stemp: {self.sat_temp}, batt: {self.batt}, prss: {self.pressure}, "
+            f"yaw: {self.yaw}, pitch: {self.pitch}, roll: {self.roll}, "
+            f"etemp: {self.eps_temp}, vol: {self.voltage}, cur: {self.current}"
+            )
