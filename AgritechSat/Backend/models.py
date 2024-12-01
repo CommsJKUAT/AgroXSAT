@@ -3,7 +3,7 @@ from django.db import models
 class Coordinates(models.Model):
     longitude =models.FloatField()
     latitude=models.FloatField()
-    updated_at = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Lat: {self.latitude}, Long: {self.longitude}"
