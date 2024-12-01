@@ -1,8 +1,8 @@
 from django.db import models
 
 class Coordinates(models.Model):
-    location = models.FloatField()
-    
+    longitude =models.FloatField()
+    latitude=models.FloatField()
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -39,4 +39,22 @@ class Payload(models.model):
 
     def __str__(self):
         return f"smoisture: {self.soil_moisture}, 
-        temp: {self.temperature}, hum: {self.humidity}, slvl: {self.smoke_level}, sph: {self.soil_ph}"
+        temp: {self.temperature}, hum: {self.humidity},
+        slvl: {self.smoke_level}, sph: {self.soil_ph}"
+    
+class telemetry(models.Model):
+    sat_temp =models.FloatField()
+    batt =models.FloatField()
+    pressure =models.FloatField()
+    yaw =models.FloatField()
+    pitch =models.FloatField()
+    roll =models.FloatField()
+    eps_temp =models.FloatField()
+    voltage =models.FloatField()
+    current =models.FloatField()
+    
+    def __str__(self):
+        return f"stemp: {self.sat_temp}, 
+        batt: {self.batt}, prss: {self.pressure},
+        yaw: {self.yaw}, pitch: {self.pitch}, roll: {self.roll},
+        etemp: {self.eps_temp}, vol: {self.voltage}, cur: {self.current}"
