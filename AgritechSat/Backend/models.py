@@ -36,6 +36,7 @@ class Payload(models.Model):
     humidity = models.FloatField()
     smoke_level = models.FloatField()
     soil_ph = models.FloatField()
+    created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
        return (
@@ -54,7 +55,8 @@ class Telemetry(models.Model):
     eps_temp =models.FloatField()
     voltage =models.FloatField()
     current =models.FloatField()
-    
+    created_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return (
             f"stemp: {self.sat_temp}, batt: {self.batt}, prss: {self.pressure}, "

@@ -7,12 +7,12 @@ import "mapbox-gl/dist/mapbox-gl.css";
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const MapboxComponent = () => {
-  const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
-  const [secondCoordinates, setSecondCoordinates] = useState({ latitude: null, longitude: null });
-  const [radius, setRadius] = useState(1000); // default radius
+  const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null }); // Ground station
+  const [allCoordinates, setAllCoordinates] = useState([]); // To store all coordinates
   const [map, setMap] = useState(null);
-  const [secondMarker, setSecondMarker] = useState(null); // Store second marker instance
-  const [coordinatesHistory, setCoordinatesHistory] = useState([]); // Store the history of second coordinates
+  const [latestMarker, setLatestMarker] = useState(null); // To store the latest marker
+  const [groundStationMarker, setGroundStationMarker] = useState(null); // To store the ground station marker
+  const [distance, setDistance] = useState(50); // Set the distance in meters (default 50 meters)
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -25,115 +25,130 @@ const MapboxComponent = () => {
       }
     };
 
-    const fetchSecondCoordinates = async () => {
+    const fetchAllCoordinates = async () => {
       try {
         const response = await axios.get("https://agroxsat.onrender.com/backendapi/satLocation/");
-        const { latitude, longitude } = response.data;
-        setSecondCoordinates({ latitude, longitude });
+        const { coordinates } = response.data;
+        setAllCoordinates(coordinates); // Set all coordinates
       } catch (error) {
-        console.error("Error fetching second coordinates:", error);
+        console.error("Error fetching all coordinates:", error);
       }
     };
 
-    // Fetch initial coordinates
     fetchCoordinates();
-    fetchSecondCoordinates();
+    fetchAllCoordinates();
 
-    // Set an interval to fetch new coordinates every minute
     const intervalId = setInterval(() => {
       fetchCoordinates();
-      fetchSecondCoordinates();
-    }, 60000); // 60000 ms = 1 minute
+      fetchAllCoordinates();
+    }, 60000); // Fetch data every minute
 
-    // Clean up interval on component unmount
     return () => clearInterval(intervalId);
-  }, []); // Empty dependency array to run only on mount
+  }, []);
 
   useEffect(() => {
-    if (coordinates.latitude && coordinates.longitude && secondCoordinates.latitude && secondCoordinates.longitude) {
+    if (coordinates.latitude && coordinates.longitude && allCoordinates.length > 0) {
       initMap();
     }
-  }, [coordinates, secondCoordinates]); // Only runs once both coordinates are available
+  }, [coordinates, allCoordinates]);
 
   const initMap = () => {
-    const map = new mapboxgl.Map({
+    if (map) return; // Avoid re-initializing map if it's already initialized
+
+    const mapInstance = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [coordinates.longitude, coordinates.latitude],
       zoom: 13,
     });
 
-    setMap(map); // Store the map instance
+    setMap(mapInstance);
 
-    // Marker for Ground Station
-    const markerElement = document.createElement("div");
-    markerElement.style.backgroundImage = "url('/GSimage.jpg')";
-    markerElement.style.width = "50px";
-    markerElement.style.height = "50px";
-    markerElement.style.backgroundSize = "contain";
+    mapInstance.on("load", () => {
+      // Add the ground station marker
+      const groundStationMarkerElement = document.createElement("div");
+      groundStationMarkerElement.style.backgroundImage = "url('/GSimage.jpg')";
+      groundStationMarkerElement.style.width = "30px";
+      groundStationMarkerElement.style.height = "30px";
+      groundStationMarkerElement.style.backgroundSize = "contain";
 
-    new mapboxgl.Marker(markerElement)
-      .setLngLat([coordinates.longitude, coordinates.latitude])
-      .addTo(map);
+      const marker = new mapboxgl.Marker(groundStationMarkerElement)
+        .setLngLat([coordinates.longitude, coordinates.latitude])
+        .addTo(mapInstance);
 
-    // Marker for Second Location (Satellite)
-    const secondMarkerElement = document.createElement("div");
-    secondMarkerElement.style.backgroundImage = "url('/cubesat.jpg')";
-    secondMarkerElement.style.width = "30px";
-    secondMarkerElement.style.height = "30px";
-    secondMarkerElement.style.backgroundSize = "contain";
+      setGroundStationMarker(marker);
 
-    const marker = new mapboxgl.Marker(secondMarkerElement)
-      .setLngLat([secondCoordinates.longitude, secondCoordinates.latitude])
-      .addTo(map);
+      // Only create the latest marker from the coordinates
+      const latestCoord = allCoordinates[allCoordinates.length - 1];
+      const latestMarkerElement = document.createElement("div");
+      latestMarkerElement.style.backgroundImage = "url('/cubesat.jpg')";
+      latestMarkerElement.style.width = "30px";
+      latestMarkerElement.style.height = "30px";
+      latestMarkerElement.style.backgroundSize = "contain";
 
-    setSecondMarker(marker); // Save reference to second marker
+      const latestMarkerInstance = new mapboxgl.Marker(latestMarkerElement)
+        .setLngLat([latestCoord.longitude, latestCoord.latitude])
+        .addTo(mapInstance);
 
-    // Draw Circle using Turf.js
-    map.on("load", () => {
-      const center = [coordinates.longitude, coordinates.latitude];
-      const circle = turf.circle(center, radius / 1000, { units: "kilometers" });
+      setLatestMarker(latestMarkerInstance);
 
-      map.addSource("circle", { type: "geojson", data: circle });
-      map.addLayer({
-        id: "circle-fill",
-        type: "fill",
-        source: "circle",
+      // Create a line connecting all coordinates (green path)
+      const line = turf.lineString(
+        allCoordinates.map(coord => [coord.longitude, coord.latitude])
+      );
+
+      // Add the line to the map
+      mapInstance.addSource("line-source", { type: "geojson", data: line });
+      mapInstance.addLayer({
+        id: "line-layer",
+        type: "line",
+        source: "line-source",
         paint: {
-          "fill-color": "#FF0000",
-          "fill-opacity": 0.35,
+          "line-color": "#00FF00", // Green color
+          "line-width": 3,
         },
       });
+
+      // Create a green circle around the ground station
+      const groundStationPoint = turf.point([coordinates.longitude, coordinates.latitude]);
+      const circle = turf.circle(groundStationPoint, distance, { units: 'meters' });
+
+      // Add the circle to the map
+      mapInstance.addSource("circle-source", {
+        type: "geojson",
+        data: circle
+      });
+
+      mapInstance.addLayer({
+        id: "circle-layer",
+        type: "fill",
+        source: "circle-source",
+        paint: {
+          "fill-color": "#00FF00",
+          "fill-opacity": 0.3
+        }
+      });
+
+      // Adjust the map to fit all coordinates
+      const bounds = new mapboxgl.LngLatBounds();
+      allCoordinates.forEach(coord => bounds.extend([coord.longitude, coord.latitude]));
+      mapInstance.fitBounds(bounds, { padding: 50 });
     });
   };
 
-  // Function to handle radius change and update the circle
-  const handleRadiusChange = (newRadius) => {
-    setRadius(newRadius);
-
-    if (map) {
-      const center = [coordinates.longitude, coordinates.latitude];
-      const updatedCircle = turf.circle(center, newRadius / 1000, { units: "kilometers" });
-
-      // Update the circle source data
-      map.getSource("circle").setData(updatedCircle);
-    }
-  };
-
-  // Update the second marker and draw the trajectory line
   useEffect(() => {
-    if (secondMarker && secondCoordinates.latitude && secondCoordinates.longitude) {
-      // Update the second marker's position
-      secondMarker.setLngLat([secondCoordinates.longitude, secondCoordinates.latitude]);
+    if (latestMarker && allCoordinates.length > 0) {
+      const latestCoordinate = allCoordinates[allCoordinates.length - 1];
 
-      // Add the new coordinate to the coordinates history
-      const updatedCoordinatesHistory = [...coordinatesHistory, secondCoordinates];
-      setCoordinatesHistory(updatedCoordinatesHistory);
+      // Update the latest marker to the latest coordinate
+      latestMarker.setLngLat([latestCoordinate.longitude, latestCoordinate.latitude]);
 
-      // Draw the line representing the trajectory of the satellite
-      const line = turf.lineString(updatedCoordinatesHistory.map(coord => [coord.longitude, coord.latitude]));
+      // Update the line with the new coordinate
+      const line = turf.lineString(
+        allCoordinates.map(coord => [coord.longitude, coord.latitude])
+      );
 
-      // Update the line on the map (or add it if it doesn't exist)
+      // Update the existing line or add a new one
       if (map.getSource("line-source")) {
         map.getSource("line-source").setData(line);
       } else {
@@ -143,45 +158,25 @@ const MapboxComponent = () => {
           type: "line",
           source: "line-source",
           paint: {
-            "line-color": "#00FF00", // Green line
+            "line-color": "#00FF00", // Green color
             "line-width": 3,
           },
         });
       }
-    }
-  }, [secondCoordinates]); // Runs every time secondCoordinates are updated
 
-  if (!coordinates.latitude || !coordinates.longitude || !secondCoordinates.latitude || !secondCoordinates.longitude) {
+      // Adjust the map to fit all coordinates
+      const bounds = new mapboxgl.LngLatBounds();
+      allCoordinates.forEach(coord => bounds.extend([coord.longitude, coord.latitude]));
+      map.fitBounds(bounds, { padding: 50 });
+    }
+  }, [allCoordinates]); // Re-run whenever coordinates change
+
+  if (!coordinates.latitude || !coordinates.longitude || allCoordinates.length === 0) {
     return <div>Loading map...</div>;
   }
 
   return (
-    <div id="map" style={{ width: "100%", height: "100vh", position: "relative" }}>
-      {/* Input for radius - Always visible */}
-      <div
-        className="radius-input"
-        style={{
-          position: "absolute",
-          top: "20px", // Adjusted for visibility
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 10,
-          backgroundColor: "white",
-          padding: "10px",
-          borderRadius: "5px",
-        }}
-      >
-        <input
-          type="number"
-          value={radius}
-          onChange={(e) => handleRadiusChange(e.target.value)}
-          min={100}
-          max={5000}
-          step={100}
-          style={{ padding: "5px", fontSize: "14px", width: "150px" }}
-        />
-      </div>
-    </div>
+    <div id="map" style={{ width: "100%", height: "100vh" }} />
   );
 };
 
