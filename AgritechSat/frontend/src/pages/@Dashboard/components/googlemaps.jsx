@@ -12,6 +12,7 @@ const MapboxComponent = () => {
   const [map, setMap] = useState(null);
   const [latestMarker, setLatestMarker] = useState(null); // To store the latest marker
   const [groundStationMarker, setGroundStationMarker] = useState(null); // To store the ground station marker
+  const [distance, setDistance] = useState(50); // Set the distance in meters (default 50 meters)
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -106,6 +107,26 @@ const MapboxComponent = () => {
           "line-color": "#00FF00", // Green color
           "line-width": 3,
         },
+      });
+
+      // Create a green circle around the ground station
+      const groundStationPoint = turf.point([coordinates.longitude, coordinates.latitude]);
+      const circle = turf.circle(groundStationPoint, distance, { units: 'meters' });
+
+      // Add the circle to the map
+      mapInstance.addSource("circle-source", {
+        type: "geojson",
+        data: circle
+      });
+
+      mapInstance.addLayer({
+        id: "circle-layer",
+        type: "fill",
+        source: "circle-source",
+        paint: {
+          "fill-color": "#00FF00",
+          "fill-opacity": 0.3
+        }
       });
 
       // Adjust the map to fit all coordinates
