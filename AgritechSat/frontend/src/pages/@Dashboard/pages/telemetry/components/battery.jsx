@@ -1,13 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FusionCharts from "fusioncharts";
 import Widgets from "fusioncharts/fusioncharts.widgets";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import ReactFC from "react-fusioncharts";
 
-// Resolve dependencies
 ReactFC.fcRoot(FusionCharts, Widgets, FusionTheme);
 
-const BatteryGauge = ({ level }) => {
+const BatteryGauge = () => {
+  const [level, setLevel] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchBatteryLevel = async () => {
+    try {
+      const response = await fetch(
+        "https://agroxsat.onrender.com/backendapi/telemetry/"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const data = await response.json();
+      setLevel(parseFloat(data.batt));
+      setLoading(false);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBatteryLevel();
+    const intervalId = setInterval(fetchBatteryLevel, 5000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
   const chartConfigs = {
     type: "hlineargauge",
     width: "100%",
@@ -21,7 +49,8 @@ const BatteryGauge = ({ level }) => {
         numbersuffix: "%",
         theme: "fusion",
         valuefontsize: "20",
-        pointerbgalpha: "0",
+        pointerbgalpha: "10",
+        showvalue: "0",
       },
       colorRange: {
         color: [
@@ -30,13 +59,23 @@ const BatteryGauge = ({ level }) => {
           { minValue: "50", maxValue: "100", code: "#6baa01" },
         ],
       },
-      pointers: [
-        {
-          value: level,
-        },
-      ],
+      pointers: {
+        pointer: [
+          {
+            value: level,
+          bgColor: "#FF5733", 
+          borderColor: "#C70039",
+          borderThickness: "4", 
+          radius: "12", 
+          alpha: "80",
+          },
+        ],
+      },
     },
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return <ReactFC {...chartConfigs} />;
 };
