@@ -106,9 +106,10 @@ def get_gs(request):
             'latitude': None,
             'longitude': None
         })
-
+    
+#tracks the satellite by giving the latest coordinates in the db
 def get_location(request):
-    coords = location.objects.order_by('-timestamp').first() 
+    coords = Coordinates.objects.order_by('-timestamp').first() 
     
     if coords:
         return JsonResponse({
@@ -178,3 +179,98 @@ class CommandView(APIView):
         command_to_return = self.__class__.command_list.pop(0)
         print("Current command list after GET:", self.__class__.command_list)
         return JsonResponse({"command": command_to_return}, status=status.HTTP_200_OK)
+    
+#telemetry
+@permission_classes([AllowAny])
+class save_gs_coordinates(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            if isinstance(request.data, dict) and '_content' not in request.data:
+                data = request.data
+                print("Parsed as JSON:", data)
+            else:
+                data = dict(request.data)
+                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
+                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
+                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+            print(latitude)
+            print(longitude)
+            if latitude is None or longitude is None:
+                return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
+            coords, created = GSCoordinates.objects.update_or_create(
+                id=1,  # Assuming you want to keep only one record
+                defaults={
+                    'latitude': float(latitude),
+                    'longitude': float(longitude),
+                }
+            )
+
+            if created:
+                return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"success": "Coordinates updated successfully"}, status=status.HTTP_200_OK)
+
+        except ValueError:
+            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+@permission_classes([AllowAny])
+class PayloadHandling(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = self.parse_request_data(request)
+            if data is None:
+                return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+
+            soil_moisture = data.get('sm')
+            temperature = data.get('temperature')
+            humidity = data.get('humidity')
+            smoke_level = data.get('smoke_level')
+            soil_ph = data.get('soil_ph')
+
+            if None in [soil_moisture, temperature, humidity, smoke_level, soil_ph]:
+                return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+            
+            payload = Payload.objects.create(
+                soil_moisture=soil_moisture,
+                temperature=temperature,
+                humidity=humidity,
+                smoke_level=smoke_level,
+                soil_ph=soil_ph
+            )
+
+            return Response(
+                {
+                    "message": "Payload saved successfully",
+                    "payload_id": payload.id,
+                    "soil_moisture": payload.soil_moisture,
+                    "temperature": payload.temperature,
+                    "humidity": payload.humidity,
+                    "smoke_level": payload.smoke_level,
+                    "soil_ph": payload.soil_ph,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def parse_request_data(self, request):
+        if isinstance(request.data, dict) and '_content' not in request.data:
+            return request.data
+        try:
+            data = dict(request.data)
+            data_json = data.get('_content', '')
+            if isinstance(data_json, list):
+                data_json = data_json[0].replace("\r\n", "")
+            return json.loads(data_json)
+        except (KeyError, json.JSONDecodeError):
+            return None
