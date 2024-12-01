@@ -30,54 +30,13 @@ class GSCoordinates(models.Model):
     def __str__(self):
         return f"Lat: {self.latitude}, Long: {self.longitude}"    
 
-class batt(models.Model):
-    batt = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
+class Payload(models.model):
+    soil_moisture = models.FloatField()
+    temperature = models.FloatField()
+    humidity = models.FloatField()
+    smoke_level = models.FloatField()
+    soil_ph = models.FloatField()
 
     def __str__(self):
-        return f"batt: {self.batt}, Time: {self.timestamp}"
-
-class humidity(models.Model):
-    humidity = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-
-    def __str__(self):
-        return f"batt: {self.batt}, Time: {self.timestamp}"
-    
-class temperature(models.Model):
-    temperature = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-
-    def __str__(self):
-        return f"batt: {self.batt}, Time: {self.timestamp}"
-class smoke(models.Model):
-    smoke = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-
-    def __str__(self):
-        return f"batt: {self.batt}, Time: {self.timestamp}"
-class soilph(models.Model):
-    soilph = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-
-    def __str__(self):
-        return f"batt: {self.batt}, Time: {self.timestamp}"
-class soilprecipitation(models.Model):
-    soilprecipitation = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-
-    def __str__(self):
-        return f"batt: {self.batt}, Time: {self.timestamp}"
-class location(models.Model):
-    location = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-
-    def __str__(self):
-        return f"batt: {self.batt}, Time: {self.timestamp}"
+        return f"smoisture: {self.soil_moisture}, 
+        temp: {self.temperature}, hum: {self.humidity}, slvl: {self.smoke_level}, sph: {self.soil_ph}"
