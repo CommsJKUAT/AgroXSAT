@@ -1,19 +1,14 @@
 from django.urls import path
-from .views import homepage,get_location,get_gs,CommandView,save_gs_coordinates,temperatureapi,soilprecipitationapi,soilphapi,smokeapi,batteryapi,humidityapi,locationapi,imagesapi,groundstationCoordinates,get_gs
+from .views import get_location,get_gs,CommandView,PayloadHandling,save_gs_coordinates,imagesapi,groundstationCoordinates,TelemetryHandling
 
 
 urlpatterns = [
-    path('', get_gs, name="homepage"),
-    path('satLocation/', get_location, name="homepage"),
-    path('location/', locationapi.as_view(), name="location"),
+    path('', get_gs, name="Ground"),
+    path('satLocation/', get_location, name="satTracker"),
     path('images/', imagesapi.as_view(), name="images"),
-    path('baseStation/', groundstationCoordinates.as_view(), name="station"),  # this is for the esp 32 module
-    path('temperature/', temperatureapi.as_view(), name="temperature"),  
-    path('humidity/', humidityapi.as_view(), name="humidity"), 
-    path('soilph/', soilphapi.as_view(), name="soilph"), 
-    path('soilprec/', soilprecipitationapi.as_view(), name="soilprec"), 
-    path('batt/', batteryapi.as_view(), name="batt"), 
+    path('baseStation/', groundstationCoordinates.as_view(), name="station"),  
     path('setGS/' , save_gs_coordinates.as_view(),name="basestation setting"),
-    path('smoke/', smokeapi.as_view(), name="smoke"), 
-    path('command/',CommandView.as_view())
+    path('command/',CommandView.as_view()),
+    path('payload/',PayloadHandling.as_view()),
+    path('telemetry/',TelemetryHandling.as_view())
 ]
