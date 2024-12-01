@@ -182,40 +182,72 @@ class CommandView(APIView):
     
 #telemetry
 @permission_classes([AllowAny])
-class save_gs_coordinates(APIView):
+class TelemetryHandling(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            if isinstance(request.data, dict) and '_content' not in request.data:
-                data = request.data
-                print("Parsed as JSON:", data)
-            else:
-                data = dict(request.data)
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
-                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-            latitude = data.get('latitude')
-            longitude = data.get('longitude')
-            print(latitude)
-            print(longitude)
-            if latitude is None or longitude is None:
-                return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
-            coords, created = GSCoordinates.objects.update_or_create(
-                id=1,  # Assuming you want to keep only one record
-                defaults={
-                    'latitude': float(latitude),
-                    'longitude': float(longitude),
-                }
+            data = self.parse_request_data(request)
+            if data is None:
+                return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+
+            sat_temp = data.get('sat_temp')
+            batt = data.get('batt')
+            pressure = data.get('pressure')
+            yaw = data.get('yaw')
+            pitch = data.get('pitch')
+            roll = data.get('roll')
+            eps_temp = data.get('eps_temp')
+            voltage = data.get('voltage')
+            current = data.get('current')
+
+            if None in [sat_temp, batt, pressure, yaw, pitch, roll, eps_temp, voltage, current]:
+                return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+            
+            telemetry = Telemetry.objects.create(
+                sat_temp=sat_temp,
+                batt=batt,
+                pressure=pressure,
+                yaw=yaw,
+                pitch=pitch,
+                roll=roll,
+                eps_temp=eps_temp,
+                voltage=voltage,
+                current=current
             )
 
-            if created:
-                return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"success": "Coordinates updated successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "message": "Telemetry saved successfully",
+                    "telemetry_id": telemetry.id,
+                    "sat_temp": telemetry.sat_temp,
+                    "batt": telemetry.batt,
+                    "pressure": telemetry.pressure,
+                    "yaw": telemetry.yaw,
+                    "pitch": telemetry.pitch,
+                    "roll": telemetry.roll,
+                    "eps_temp": telemetry.eps_temp,
+                    "voltage": telemetry.voltage,
+                    "current": telemetry.current,
+                },
+                status=status.HTTP_201_CREATED,
+            )
 
-        except ValueError:
-            return Response({"error": "Invalid latitude or longitude format"}, status=status.HTTP_400_BAD_REQUEST)
         except json.JSONDecodeError:
             return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def parse_request_data(self, request):
+        if isinstance(request.data, dict) and '_content' not in request.data:
+            return request.data
+        try:
+            data = dict(request.data)
+            data_json = data.get('_content', '')
+            if isinstance(data_json, list):
+                data_json = data_json[0].replace("\r\n", "")
+            return json.loads(data_json)
+        except (KeyError, json.JSONDecodeError):
+            return None
         
 
 
