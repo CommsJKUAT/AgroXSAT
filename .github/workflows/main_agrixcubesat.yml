@@ -35,6 +35,7 @@ jobs:
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       - name: startup command
         run: |
+          cd AgritechSat
           gunicorn AgritechSat.wsgi --bind=0.0.0.0 --workers=3
       
 
