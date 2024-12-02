@@ -34,6 +34,11 @@ jobs:
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       - name: startup command
+        env:
+          MAPBOX: "${{ secrets.MAPBOX }}"
+          DATABASECREDS: "${{ secrets.DATABASECREDS }}"
+          SECRET_KEY: "${{ secrets.SECRET_KEY }}"
+          DEBUG: "True"
         run: |
           cd AgritechSat
           gunicorn AgritechSat.wsgi --bind=0.0.0.0 --workers=3
