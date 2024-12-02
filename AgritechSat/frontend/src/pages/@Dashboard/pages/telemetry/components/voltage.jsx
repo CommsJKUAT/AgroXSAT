@@ -4,7 +4,6 @@ import Widgets from "fusioncharts/fusioncharts.widgets";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import ReactFC from "react-fusioncharts";
 
-// Set up FusionCharts
 ReactFC.fcRoot(FusionCharts, Widgets, FusionTheme);
 
 const VoltageGauge = () => {
@@ -12,7 +11,6 @@ const VoltageGauge = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch voltage level from the backend
   const fetchVoltageLevel = async () => {
     try {
       const response = await fetch(
@@ -22,7 +20,6 @@ const VoltageGauge = () => {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
-      
       setVoltage(parseFloat(data.voltage)); 
       setLoading(false);
     } catch (error) {
@@ -39,11 +36,10 @@ const VoltageGauge = () => {
     };
   }, []);
 
-  
   const chartConfigs = {
-    type: "hlineargauge",
-    width: "400",
-    height: "150",
+    type: "lineargauge",
+    width: "150",
+    height: "400",
     dataFormat: "json",
     dataSource: {
       chart: {
@@ -55,12 +51,13 @@ const VoltageGauge = () => {
         valuefontsize: "20",
         pointerbgalpha: "10",
         showvalue: "0",
+        chartBottomMargin: "10",
       },
       colorRange: {
         color: [
-          { minValue: "0", maxValue: "80", code: "#e44a00" }, 
-          { minValue: "80", maxValue: "160", code: "#f8bd19" }, 
-          { minValue: "160", maxValue: "240", code: "#6baa01" }, 
+          { minValue: "0", maxValue: "80", code: "#e44a00" },
+          { minValue: "80", maxValue: "160", code: "#f8bd19" },
+          { minValue: "160", maxValue: "240", code: "#6baa01" },
         ],
       },
       pointers: {
