@@ -22,6 +22,7 @@ const VoltageGauge = () => {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
+      
       setVoltage(parseFloat(data.voltage)); 
       setLoading(false);
     } catch (error) {
@@ -38,7 +39,7 @@ const VoltageGauge = () => {
     };
   }, []);
 
-  // Configure the chart
+  
   const chartConfigs = {
     type: "hlineargauge",
     width: "400",

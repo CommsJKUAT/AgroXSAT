@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FusionCharts from "fusioncharts";
 import Widgets from "fusioncharts/fusioncharts.widgets";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import ReactFC from "react-fusioncharts";
 
-// Resolve dependencies
+
 ReactFC.fcRoot(FusionCharts, Widgets, FusionTheme);
 
-const IMUGauge = ({ imuValue, type }) => {
+const IMUGauge = ({ type, imuValue }) => {
   const chartConfigs = {
     type: "angulargauge",
     width: "400",
@@ -15,7 +15,7 @@ const IMUGauge = ({ imuValue, type }) => {
     dataFormat: "json",
     dataSource: {
       chart: {
-        caption: `${type} Angle`, // Title changes based on the type (Yaw, Pitch, Roll)
+        caption: `${type} Angle`, 
         lowerlimit: "-180",
         upperlimit: "180",
         numbersuffix: "°",
@@ -30,21 +30,9 @@ const IMUGauge = ({ imuValue, type }) => {
       },
       colorRange: {
         color: [
-          {
-            minValue: "-180",
-            maxValue: "-90",
-            code: "#E44A00", // Red for negative extreme
-          },
-          {
-            minValue: "-90",
-            maxValue: "90",
-            code: "#62B58F", // Green for normal range
-          },
-          {
-            minValue: "90",
-            maxValue: "180",
-            code: "#E44A00", // Red for positive extreme
-          },
+          { minValue: "-180", maxValue: "-90", code: "#E44A00" },
+          { minValue: "-90", maxValue: "90", code: "#62B58F" }, 
+          { minValue: "90", maxValue: "180", code: "#E44A00" },  
         ],
       },
       dials: {
@@ -61,4 +49,52 @@ const IMUGauge = ({ imuValue, type }) => {
   return <ReactFC {...chartConfigs} />;
 };
 
-export default IMUGauge;
+const IMUDisplay = () => {
+  const [imuData, setImuData] = useState({
+    roll: 0,
+    yaw: 0,
+    pitch: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+ 
+  const fetchIMUData = async () => {
+    try {
+      const response = await fetch("https://agroxsat.onrender.com/backendapi/telemetry/"); 
+      if (!response.ok) {
+        throw new Error("Failed to fetch IMU data");
+      }
+      const data = await response.json();
+      
+      setImuData({
+        roll: parseFloat(data.roll),
+        yaw: parseFloat(data.yaw),
+        pitch: parseFloat(data.pitch),
+      });
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchIMUData();
+    const intervalId = setInterval(fetchIMUData, 5000); 
+    return () => clearInterval(intervalId); 
+  }, []);
+
+  if (loading) return <div>Loading IMU Data...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+      <IMUGauge type="Roll" imuValue={imuData.roll} />
+      <IMUGauge type="Yaw" imuValue={imuData.yaw} />
+      <IMUGauge type="Pitch" imuValue={imuData.pitch} />
+    </div>
+  );
+};
+
+export default IMUDisplay;
