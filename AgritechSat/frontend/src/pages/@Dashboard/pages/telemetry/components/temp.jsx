@@ -1,44 +1,66 @@
-// STEP 1 - Include Dependencies
-// Include react
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FusionCharts from "fusioncharts";
 import charts from "fusioncharts/fusioncharts.charts";
 import ReactFusioncharts from "react-fusioncharts";
 
-// Resolves charts dependancy
 charts(FusionCharts);
 
-const dataSource = {
-  chart: {
-    caption: "Satellite Temperature",
-    subcaption: "(Per Quarter minute)",
-    lowerlimit: "120",
-    upperlimit: "200",
-    numbersuffix: "°F",
-    thmfillcolor: "#008ee4",
-    showgaugeborder: "1",
-    gaugebordercolor: "#008ee4",
-    gaugeborderthickness: "2",
-    plottooltext: "Temperature: <b>$datavalue</b> ",
-    theme: "gammel",
-    showvalue: "1",
-  },
-  value: "140",
-};
+const Temperature = () => {
+  const [temperature, setTemperature] = useState(140);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-// STEP 4 - Creating the DOM element to pass the react-fusioncharts component
-class Temperature extends React.Component {
-  render() {
-    return (
-      <ReactFusioncharts
-        type="thermometer"
-        width="100%"
-        height="400"
-        dataFormat="JSON"
-        dataSource={dataSource}
-      />
-    );
-  }
-}
+  const fetchTemperature = async () => {
+    try {
+      const response = await fetch("https://agroxsat.onrender.com/backendapi/telemetry/");
+      if (!response.ok) {
+        throw new Error("Failed to fetch temperature data");
+      }
+      const data = await response.json();
+      setTemperature(parseFloat(data.sat_temp));
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTemperature();
+    const intervalId = setInterval(fetchTemperature, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const dataSource = {
+    chart: {
+      caption: "Satellite Temperature",
+      subcaption: "(Per Quarter Minute)",
+      lowerlimit: "120",
+      upperlimit: "200",
+      numbersuffix: "°C",
+      thmfillcolor: "#008ee4",
+      showgaugeborder: "1",
+      gaugebordercolor: "#008ee4",
+      gaugeborderthickness: "2",
+      plottooltext: "Temperature: <b>$datavalue</b>",
+      theme: "gammel",
+      showvalue: "1",
+    },
+    value: temperature.toString(),
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return (
+    <ReactFusioncharts
+      type="thermometer"
+      width="100%"
+      height="400"
+      dataFormat="JSON"
+      dataSource={dataSource}
+    />
+  );
+};
 
 export default Temperature;

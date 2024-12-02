@@ -1,13 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import FusionCharts from "fusioncharts";
 import Widgets from "fusioncharts/fusioncharts.widgets";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
-import ReactFC from "react-fusioncharts";
+import ReactFusioncharts from "react-fusioncharts";
 
-// Resolve dependencies
-ReactFC.fcRoot(FusionCharts, Widgets, FusionTheme);
+// Attach dependencies
+ReactFusioncharts.fcRoot(FusionCharts, Widgets, FusionTheme);
 
-const EPSTemperatureGauge = ({ temperature }) => {
+const EPSTemperatureGauge = () => {
+  const [temperature, setTemperature] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchTemperature = async () => {
+    try {
+      const response = await fetch("https://agroxsat.onrender.com/backendapi/telemetry/");
+      if (!response.ok) {
+        throw new Error("Failed to fetch EPS temperature data");
+      }
+      const data = await response.json();
+      setTemperature(parseFloat(data.eps_temp));
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTemperature();
+    const intervalId = setInterval(fetchTemperature, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   const chartConfigs = {
     type: "thermometer",
     width: "100%",
@@ -32,11 +57,14 @@ const EPSTemperatureGauge = ({ temperature }) => {
         thermometerbulbheight: "15",
         thermometerbulbwidth: "20",
       },
-      value: temperature,
+      value: temperature.toString(),
     },
   };
 
-  return <ReactFC {...chartConfigs} />;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return <ReactFusioncharts {...chartConfigs} />;
 };
 
 export default EPSTemperatureGauge;
