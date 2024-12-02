@@ -22,7 +22,7 @@ const CurrentGauge = () => {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
-      console.log("ddtaa ",data);
+      
       setCurrent(parseFloat(data.current)); 
       setLoading(false);
     } catch (error) {
