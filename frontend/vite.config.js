@@ -11,7 +11,7 @@ export default defineConfig({
       },
       proxy: {
           '/backend': {
-              target: 'https://agroxsat.onrender.com',
+              target: 'https://agrixcubesat.azurewebsites.net/',
               changeOrigin: true,
               secure: false,
           },
