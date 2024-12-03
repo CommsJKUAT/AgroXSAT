@@ -7,7 +7,7 @@ export default defineConfig({
   
   server: {
     build: {
-        outDir: 'dist', 
+        outDir: './frontend/dist', 
       },
       proxy: {
           '/backend': {
