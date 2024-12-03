@@ -49,10 +49,14 @@ jobs:
           echo $SECRET_KEY
           
       - name: Collect static
-        run: python manage.py collectstatic
+        run: |
+          cd AgritechSat
+          python manage.py collectstatic
 
       - name: Run tests
-        run: python manage.py runserver
+        run:  |
+          cd AgritechSat
+          python manage.py runserver
       
       - name: Zip artifact for deployment
         run:  |
