@@ -36,8 +36,6 @@ jobs:
 
       - name: List App Directory
         run: |
-          echo "Listing the ./frontend directory:"
-          ls -R ./frontend
           echo "Listing the ./frontend/dist directory:"
           ls -R ./frontend/dist
     
