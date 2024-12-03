@@ -47,6 +47,7 @@ jobs:
           echo $MAPBOX
           echo $DATABASECREDS
           echo $SECRET_KEY
+        shell: bash
           
       - name: Collect static
         run: |
