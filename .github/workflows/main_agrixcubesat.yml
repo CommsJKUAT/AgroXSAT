@@ -44,21 +44,10 @@ jobs:
           DEBUG: "True"
         run: |
           cd AgritechSat
-          echo $MAPBOX
-          echo $DATABASECREDS
-          echo $SECRET_KEY
-        shell: bash
-          
-      - name: Collect static
-        run: |
-          cd AgritechSat
-          python manage.py collectstatic
-
-      - name: Run tests
-        run:  |
-          cd AgritechSat
-          python manage.py runserver
-      
+          python manage.py check
+          python manage.py migrate
+          python manage.py collectstatic --noinput
+               
       - name: Zip artifact for deployment
         run:  |
           cd AgritechSat
