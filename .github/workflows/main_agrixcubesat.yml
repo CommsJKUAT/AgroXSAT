@@ -57,7 +57,7 @@ jobs:
         with:
           name: python-app
           path: |
-            release.zip
+            AgritechSat/release.zip
             !venv/
 
   deploy:
