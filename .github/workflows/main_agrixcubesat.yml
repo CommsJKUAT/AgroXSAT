@@ -32,6 +32,8 @@ jobs:
         run: |
           cd AgritechSat
           pip install -r requirements.txt
+          cat requirements.txt
+
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       - name: startup command
