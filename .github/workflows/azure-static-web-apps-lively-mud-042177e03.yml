@@ -23,11 +23,11 @@ jobs:
           node-version: 18
       - name: Install Dependencies
         run: |
-          
+          cd frontend
           npm install
       - name: Build Application
         run: |
-          
+          cd frontend
           npm run build
       - name: Build And Deploy
         id: builddeploy
