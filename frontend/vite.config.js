@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   
   server: {
-      
+    build: {
+        outDir: 'dist', 
+      },
       proxy: {
           '/backend': {
               target: 'https://agroxsat.onrender.com',
