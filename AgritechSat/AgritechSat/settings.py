@@ -10,7 +10,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
-    'https://agroxsat.onrender.com/'
+    'https://lively-mud-042177e03.4.azurestaticapps.net/'
 ]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -131,7 +131,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    'https://agroxsatsite.onrender.com',
+    'https://lively-mud-042177e03.4.azurestaticapps.net/',
     'http://localhost:5173',
    
 ]
