@@ -133,6 +133,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'https://lively-mud-042177e03.4.azurestaticapps.net',
     'http://localhost:5173',
+    'http://localhost:4280'
    
 ]
 CORS_ALLOW_METHODS = [
