@@ -295,7 +295,6 @@ class PayloadHandling(APIView):
             if None in [soil_moisture, temperature, humidity, smoke_level, soil_ph]:
                 return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-            
             payload = Payload.objects.create(
                 soil_moisture=soil_moisture,
                 temperature=temperature,
@@ -319,6 +318,29 @@ class PayloadHandling(APIView):
 
         except json.JSONDecodeError:
             return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            
+            payloads = Payload.objects.all()
+
+            payload_data = [
+                {
+                    "payload_id": payload.id,
+                    "soil_moisture": payload.soil_moisture,
+                    "temperature": payload.temperature,
+                    "humidity": payload.humidity,
+                    "smoke_level": payload.smoke_level,
+                    "soil_ph": payload.soil_ph,
+                    "created_at": payload.created_at.isoformat() if hasattr(payload, 'created_at') else None,
+                }
+                for payload in payloads
+            ]
+
+            return Response(payload_data, status=status.HTTP_200_OK)
+
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
