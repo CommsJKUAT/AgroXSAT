@@ -33,12 +33,7 @@ jobs:
         run: |
           cd frontend
           npm run build
-
-      - name: List App Directory
-        run: |
-          echo "Listing the ./frontend/dist directory:"
-          ls -R ./frontend/dist
-    
+          
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
