@@ -1,4 +1,3 @@
-
 name: Azure Static Web Apps CI/CD
 
 on:
@@ -6,7 +5,7 @@ on:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize, reopened]
     branches:
       - main
 
@@ -25,25 +24,25 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+
       - name: Install Dependencies
         run: |
           cd frontend
           npm install
+
       - name: Build Application
         run: |
           cd frontend
           npm run build
-          
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_MUD_042177E03 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} 
           action: "upload"
           app_location: "./frontend"
-          output_location: 'dist' 
-         
+          output_location: 'dist'
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
