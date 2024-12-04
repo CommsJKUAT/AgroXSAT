@@ -28,7 +28,7 @@ const Login = () => {
     try {
       console.log("Sending Request");
       const response = await fetch(
-        "https://agroxsat.onrender.com/backend/login/",
+        "https://agrixcubesat.azurewebsites.net/backend/login/",
         {
           method: "POST",
           headers: {

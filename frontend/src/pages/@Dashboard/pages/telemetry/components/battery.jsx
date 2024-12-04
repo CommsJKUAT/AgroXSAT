@@ -14,7 +14,7 @@ const BatteryGauge = () => {
   const fetchBatteryLevel = async () => {
     try {
       const response = await fetch(
-        "https://agroxsat.onrender.com/backendapi/telemetry/"
+        "https://agrixcubesat.azurewebsites.net/backendapi/telemetry/"
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data");
