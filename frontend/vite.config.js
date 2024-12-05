@@ -7,7 +7,16 @@ export default defineConfig({
   
   server: {
     build: {
-        outDir: './frontend/dist', 
+        outDir: 'dist', 
+      rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'; // All third-party libraries will go into a 'vendor' chunk
+          }
+        }
+      }
+    }
       },
       proxy: {
           '/backend': {
