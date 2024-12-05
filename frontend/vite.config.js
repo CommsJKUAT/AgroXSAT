@@ -7,16 +7,17 @@ export default defineConfig({
   
   server: {
     build: {
-        outDir: 'dist', 
-      rollupOptions: {
+    rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            return 'vendor'; // All third-party libraries will go into a 'vendor' chunk
+            return 'vendor'; 
           }
         }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000, 
+  }
       },
       proxy: {
           '/backend': {
