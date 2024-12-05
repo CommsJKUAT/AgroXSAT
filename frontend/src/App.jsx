@@ -11,7 +11,7 @@ import Gallery from "./pages/@Dashboard/pages/gallery/gallery";
 
 function App() {
   return (
-    <Router basename="/AgriX">
+    <Router>
       <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
