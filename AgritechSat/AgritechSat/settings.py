@@ -10,7 +10,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
-    'https://lively-mud-042177e03.4.azurestaticapps.net/'
+    'https://agroxsatsite.onrender.com/'
 ]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -132,7 +132,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'https://lively-mud-042177e03.4.azurestaticapps.net',
+    'https://agroxsatsite.onrender.com/',
     'http://localhost:5173',
     'http://localhost:4280'
    
