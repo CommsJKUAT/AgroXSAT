@@ -65,7 +65,7 @@ class Telemetry(models.Model):
 
     def __str__(self):
         return (
-            f"stemp: {self.sat_temp}, batt: {self.batt},alt: {self.altitude}, prss: {self.pressure}, "
+            f"stemp: {self.sat_temp}, batt: {self.batt}, lat: {self.lat},lon: {self.lon},alt: {self.altitude}, prss: {self.pressure}, "
             f"yaw: {self.yaw},hum: {self.humidity}, pitch: {self.pitch}, roll: {self.roll}, "
-            f"etemp: {self.eps_temp}, vol: {self.voltage}, cur: {self.current}"
+            f"etemp: {self.eps_temp}, vol1: {self.voltage1},, vol2: {self.voltage2}, cur1: {self.current1}, cur2: {self.current2}"
             )
