@@ -190,17 +190,22 @@ class TelemetryHandling(APIView):
             if data is None:
                 return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
 
-            sat_temp = data.get('sat_temp')
-            batt = data.get('batt')
-            pressure = data.get('pressure')
-            yaw = data.get('yaw')
-            pitch = data.get('pitch')
-            roll = data.get('roll')
-            eps_temp = data.get('eps_temp')
-            voltage = data.get('voltage')
-            current = data.get('current')
-
-            if None in [sat_temp, batt, pressure, yaw, pitch, roll, eps_temp, voltage, current]:
+            sat_temp = data.get('T')
+            batt = data.get('BT')
+            pressure = data.get('P')
+            yaw = data.get('Z')
+            humidity = data.get('H')
+            pitch = data.get('X')
+            roll = data.get('Y')
+            altitude = data.get('A')
+            eps_temp = data.get('M')
+            voltage1 = data.get('B1')
+            voltage2 = data.get('B2')
+            current1 = data.get('C1')
+            current2 = data.get('C2')
+            lat= data.get('La')
+            lon= data.get('L')
+            if None in [sat_temp, batt,lat,lon, pressure, yaw, pitch, roll, eps_temp, voltage1, voltage2, altitude,humidity, current1, current2]:
                 return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
             telemetry = Telemetry.objects.create(
@@ -208,11 +213,17 @@ class TelemetryHandling(APIView):
                 batt=batt,
                 pressure=pressure,
                 yaw=yaw,
+                altitude=altitude,
+                humidity=humidity,
                 pitch=pitch,
                 roll=roll,
                 eps_temp=eps_temp,
-                voltage=voltage,
-                current=current
+                voltage1=voltage1,
+                voltage2=voltage2,
+                current1=current1,
+                current2=current2,
+                lat=lat,
+                lon=lon
             )
 
             return Response(
