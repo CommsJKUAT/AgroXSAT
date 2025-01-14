@@ -190,40 +190,51 @@ class TelemetryHandling(APIView):
             if data is None:
                 return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
 
-            sat_temp = data.get('T')
-            batt = data.get('BT')
-            pressure = data.get('P')
-            yaw = data.get('Z')
-            humidity = data.get('H')
-            pitch = data.get('X')
-            roll = data.get('Y')
-            altitude = data.get('A')
-            eps_temp = data.get('M')
-            voltage1 = data.get('B1')
-            voltage2 = data.get('B2')
-            current1 = data.get('C1')
-            current2 = data.get('C2')
-            lat= data.get('La')
-            lon= data.get('L')
-            if None in [sat_temp, batt,lat,lon, pressure, yaw, pitch, roll, eps_temp, voltage1, voltage2, altitude,humidity, current1, current2]:
-                return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+            # Extract fields from the request data
+            required_fields = {
+                'sat_temp': data.get('T'),
+                'batt': data.get('BT'),
+                'pressure': data.get('P'),
+                'yaw': data.get('Z'),
+                'humidity': data.get('H'),
+                'pitch': data.get('X'),
+                'roll': data.get('Y'),
+                'altitude': data.get('A'),
+                'eps_temp': data.get('M'),
+                'voltage1': data.get('B1'),
+                'voltage2': data.get('B2'),
+                'current1': data.get('C1'),
+                'current2': data.get('C2'),
+                'lat': data.get('La'),
+                'lon': data.get('L')
+            }
 
+            # Identify missing fields
+            missing_fields = [key for key, value in required_fields.items() if value is None]
+
+            if missing_fields:
+                return Response(
+                    {"error": "Missing required fields", "missing_fields": missing_fields},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Create telemetry object
             telemetry = Telemetry.objects.create(
-                sat_temp=sat_temp,
-                batt=batt,
-                pressure=pressure,
-                yaw=yaw,
-                altitude=altitude,
-                humidity=humidity,
-                pitch=pitch,
-                roll=roll,
-                eps_temp=eps_temp,
-                voltage1=voltage1,
-                voltage2=voltage2,
-                current1=current1,
-                current2=current2,
-                lat=lat,
-                lon=lon
+                sat_temp=required_fields['sat_temp'],
+                batt=required_fields['batt'],
+                pressure=required_fields['pressure'],
+                yaw=required_fields['yaw'],
+                altitude=required_fields['altitude'],
+                humidity=required_fields['humidity'],
+                pitch=required_fields['pitch'],
+                roll=required_fields['roll'],
+                eps_temp=required_fields['eps_temp'],
+                voltage1=required_fields['voltage1'],
+                voltage2=required_fields['voltage2'],
+                current1=required_fields['current1'],
+                current2=required_fields['current2'],
+                lat=required_fields['lat'],
+                lon=required_fields['lon']
             )
 
             return Response(
@@ -237,8 +248,12 @@ class TelemetryHandling(APIView):
                     "pitch": telemetry.pitch,
                     "roll": telemetry.roll,
                     "eps_temp": telemetry.eps_temp,
-                    "voltage": telemetry.voltage,
-                    "current": telemetry.current,
+                    "voltage1": telemetry.voltage1,
+                    "voltage2": telemetry.voltage2,
+                    "current1": telemetry.current1,
+                    "current2": telemetry.current2,
+                    "lat": telemetry.lat,
+                    "lon": telemetry.lon,
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -297,11 +312,11 @@ class PayloadHandling(APIView):
             if data is None:
                 return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
 
-            soil_moisture = data.get('sm')
-            temperature = data.get('temperature')
-            humidity = data.get('humidity')
-            smoke_level = data.get('smoke_level')
-            soil_ph = data.get('soil_ph')
+            soil_moisture = data.get('SM')
+            temperature = data.get('T')
+            humidity = data.get('H')
+            smoke_level = data.get('SL')
+            soil_ph = data.get('SP')
 
             if None in [soil_moisture, temperature, humidity, smoke_level, soil_ph]:
                 return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
