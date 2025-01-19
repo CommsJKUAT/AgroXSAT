@@ -309,6 +309,7 @@ class PayloadHandling(APIView):
     def post(self, request, *args, **kwargs):
         try:
             data = self.parse_request_data(request)
+            print(data)
             if data is None:
                 return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
 
