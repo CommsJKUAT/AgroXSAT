@@ -52,14 +52,20 @@ class Telemetry(models.Model):
     yaw =models.FloatField()
     pitch =models.FloatField()
     roll =models.FloatField()
+    altitude=models.FloatField()
+    humidity=models.FloatField()
     eps_temp =models.FloatField()
-    voltage =models.FloatField()
-    current =models.FloatField()
+    voltage1 =models.FloatField()
+    voltage2 =models.FloatField()
+    current1 =models.FloatField()
+    current2 =models.FloatField()
+    lat=models.FloatField()
+    lon=models.FloatField()
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return (
-            f"stemp: {self.sat_temp}, batt: {self.batt}, prss: {self.pressure}, "
-            f"yaw: {self.yaw}, pitch: {self.pitch}, roll: {self.roll}, "
-            f"etemp: {self.eps_temp}, vol: {self.voltage}, cur: {self.current}"
+            f"stemp: {self.sat_temp}, batt: {self.batt}, lat: {self.lat},lon: {self.lon},alt: {self.altitude}, prss: {self.pressure}, "
+            f"yaw: {self.yaw},hum: {self.humidity}, pitch: {self.pitch}, roll: {self.roll}, "
+            f"etemp: {self.eps_temp}, vol1: {self.voltage1},, vol2: {self.voltage2}, cur1: {self.current1}, cur2: {self.current2}"
             )

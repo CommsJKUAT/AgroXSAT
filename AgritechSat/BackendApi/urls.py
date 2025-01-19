@@ -3,9 +3,9 @@ from .views import get_location,get_gs,SaTracker,CommandView,PayloadHandling,sav
 
 
 urlpatterns = [
-    path('', get_gs, name="Ground"),
-    path('satLocation/', get_location, name="satTracker"),#get
-    path('sat/', SaTracker.as_view(), name="satTracker"),#post
+    path('', get_gs, name="Ground"), #get
+    path('satLocation/', get_location, name="satTracker"), #get
+    path('sat/', SaTracker.as_view(), name="satTracker"), #post
     path('images/', imagesapi.as_view(), name="images"),
     path('baseStation/', groundstationCoordinates.as_view(), name="station"),  
     path('setGS/' , save_gs_coordinates.as_view(),name="basestation setting"),
