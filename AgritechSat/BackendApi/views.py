@@ -374,8 +374,9 @@ class PayloadHandling(APIView):
     def parse_request_data(self, request):
     # Check if request.data is already a dictionary
         if isinstance(request.data, dict):
+            print(request.data)
             return request.data
-        
+
         # Attempt to decode JSON data from the body
         try:
             return json.loads(request.body.decode('utf-8'))
