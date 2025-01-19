@@ -1,2 +1,2 @@
-The ground Station IS down
+The ground Station is coming up.
 
