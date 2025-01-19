@@ -131,7 +131,7 @@ class save_gs_coordinates(APIView):
                 print("Parsed as JSON:", data)
             else:
                 data = dict(request.data)
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
+                data_json = data.get('_content', '')  
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
             latitude = data.get('latitude')
@@ -141,7 +141,7 @@ class save_gs_coordinates(APIView):
             if latitude is None or longitude is None:
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
             coords, created = GSCoordinates.objects.update_or_create(
-                id=1,  # Assuming you want to keep only one record
+                id=1,  
                 defaults={
                     'latitude': float(latitude),
                     'longitude': float(longitude),
@@ -149,7 +149,7 @@ class save_gs_coordinates(APIView):
             )
 
             if created:
-                return Response({"success": "Coordinates created successfully"}, status=status.HTTP_201_CREATED)
+                return Response({"success": "GS set successfully"}, status=status.HTTP_201_CREATED)
             else:
                 return Response({"success": "Coordinates updated successfully"}, status=status.HTTP_200_OK)
 
