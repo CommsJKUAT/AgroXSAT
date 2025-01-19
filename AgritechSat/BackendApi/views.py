@@ -372,16 +372,16 @@ class PayloadHandling(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def parse_request_data(self, request):
-        if isinstance(request.data, dict) and '_content' not in request.data:
+    # Check if request.data is already a dictionary
+        if isinstance(request.data, dict):
             return request.data
+        
+        # Attempt to decode JSON data from the body
         try:
-            data = dict(request.data)
-            data_json = data.get('_content', '')
-            if isinstance(data_json, list):
-                data_json = data_json[0].replace("\r\n", "")
-            return json.loads(data_json)
-        except (KeyError, json.JSONDecodeError):
+            return json.loads(request.body.decode('utf-8'))
+        except (json.JSONDecodeError, AttributeError):
             return None
+
         
 #satellite location
 @permission_classes([AllowAny])
