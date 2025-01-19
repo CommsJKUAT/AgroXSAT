@@ -308,11 +308,24 @@ class TelemetryHandling(APIView):
 class PayloadHandling(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            data = self.parse_request_data(request)
-            print(data)
-            if data is None:
-                return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
-
+            # Check if request.data is a dictionary (it will be if the content is JSON)
+            if isinstance(request.data, dict) and '_content' not in request.data:
+                data = request.data
+                print("Parsed as JSON:", data)
+            else:
+                # Convert QueryDict to a dictionary
+                data = dict(request.data)
+                print("QueryDict Data:", data)
+                
+                # Extract JSON content from '_content' key
+                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
+                print(data_json)
+                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
+                data = json.loads(data_json)  # Convert JSON string to a Python dictionary
+                print("Extracted Data:", data)
+            # Extract temperature and humidity
+          
+            
             soil_moisture = data.get('SM')
             temperature = data.get('T')
             humidity = data.get('H')
@@ -370,18 +383,16 @@ class PayloadHandling(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            # Simple validation check
+            if image is None:
+                return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
+           
+            return Response({"message": "Success", "data": data}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def parse_request_data(self, request):
-    # Check if request.data is already a dictionary
-        if isinstance(request.data, dict):
-            print(request.data)
-            return request.data
-
-        # Attempt to decode JSON data from the body
-        try:
-            return json.loads(request.body.decode('utf-8'))
-        except (json.JSONDecodeError, AttributeError):
-            return None
 
         
 #satellite location
