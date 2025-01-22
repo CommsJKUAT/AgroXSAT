@@ -409,8 +409,8 @@ class SaTracker(APIView):
                 data = json.loads(data_json)
 
             # Extract latitude and longitude from data
-            latitude = data.get('latitude')
-            longitude = data.get('longitude')
+            latitude = data.get('La')
+            longitude = data.get('L')
 
             # Validate presence of coordinates
             if latitude is None or longitude is None:
