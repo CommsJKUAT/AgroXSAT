@@ -407,7 +407,7 @@ class SaTracker(APIView):
                 if isinstance(data_json, list):
                     data_json = data_json[0].replace("\r\n", "")
                 data = json.loads(data_json)
-
+            print(data)
             # Extract latitude and longitude from data
             latitude = data.get('La')
             longitude = data.get('L')
