@@ -205,8 +205,7 @@ class TelemetryHandling(APIView):
                 'voltage2': data.get('B2'),
                 'current1': data.get('C1'),
                 'current2': data.get('C2'),
-                'lat': data.get('La'),
-                'lon': data.get('L')
+                
             }
 
             # Identify missing fields
