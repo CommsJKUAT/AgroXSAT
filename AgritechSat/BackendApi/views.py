@@ -204,7 +204,7 @@ class TelemetryHandling(APIView):
                 'voltage1': data.get('B1'),
                 'voltage2': data.get('B2'),
                 'current1': data.get('C1'),
-                'current2': data.get('C2'),
+                'current2': data.get('C2')
                 
             }
 
@@ -231,9 +231,8 @@ class TelemetryHandling(APIView):
                 voltage1=required_fields['voltage1'],
                 voltage2=required_fields['voltage2'],
                 current1=required_fields['current1'],
-                current2=required_fields['current2'],
-                lat=required_fields['lat'],
-                lon=required_fields['lon']
+                current2=required_fields['current2']
+                
             )
 
             return Response(
