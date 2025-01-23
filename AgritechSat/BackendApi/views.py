@@ -250,8 +250,7 @@ class TelemetryHandling(APIView):
                     "voltage2": telemetry.voltage2,
                     "current1": telemetry.current1,
                     "current2": telemetry.current2,
-                    "lat": telemetry.lat,
-                    "lon": telemetry.lon,
+                    
                 },
                 status=status.HTTP_201_CREATED,
             )
