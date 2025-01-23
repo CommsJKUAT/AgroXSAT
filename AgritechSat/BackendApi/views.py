@@ -250,8 +250,7 @@ class TelemetryHandling(APIView):
                     "voltage2": telemetry.voltage2,
                     "current1": telemetry.current1,
                     "current2": telemetry.current2,
-                    "lat": telemetry.lat,
-                    "lon": telemetry.lon,
+                    
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -407,10 +406,10 @@ class SaTracker(APIView):
                 if isinstance(data_json, list):
                     data_json = data_json[0].replace("\r\n", "")
                 data = json.loads(data_json)
-
+            print(data)
             # Extract latitude and longitude from data
-            latitude = data.get('latitude')
-            longitude = data.get('longitude')
+            latitude = data.get('La')
+            longitude = data.get('L')
 
             # Validate presence of coordinates
             if latitude is None or longitude is None:
