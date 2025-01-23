@@ -276,8 +276,10 @@ class TelemetryHandling(APIView):
                     "pitch": latest_telemetry.pitch,
                     "roll": latest_telemetry.roll,
                     "eps_temp": latest_telemetry.eps_temp,
-                    "voltage": latest_telemetry.voltage,
-                    "current": latest_telemetry.current,
+                    "voltage": latest_telemetry.voltage1,
+                    "current": latest_telemetry.current1,
+                    "voltage2": latest_telemetry.voltage2,
+                    "current2": latest_telemetry.current2,
                     "created_at": latest_telemetry.created_at 
                 },
                 status=status.HTTP_200_OK,
