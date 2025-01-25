@@ -35,14 +35,12 @@ class imagesapi(APIView):
                 data_json = data_json[0].replace("\r\n", "")  
                 data = json.loads(data_json) 
             image= data.get('image')
-            image_name = image.split('/')[0]
-            image = image.split('/', 1) 
-            image=image[1]
+            
             if image is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             image_data = Images(
-                image=image,
-                image_name=image_name   
+                image=image
+                
             )
             image_data.save()
             return Response({"message": "Success", "data": image}, status=status.HTTP_200_OK)
