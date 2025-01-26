@@ -34,16 +34,31 @@ class imagesapi(APIView):
                 data_json = data.get('_content', '') 
                 data_json = data_json[0].replace("\r\n", "")  
                 data = json.loads(data_json) 
-            image= data.get('image')
+            image = data.get('image')
             
             if image is None:
                 return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
             image_data = Images(
                 image=image
-                
             )
             image_data.save()
             return Response({"message": "Success", "data": image}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Get all images from the database
+            images = Images.objects.all().order_by('-id')  # Most recent first
+            # Serialize the images
+            image_list = []
+            for img in images:
+                image_list.append({
+                    'id': img.id,
+                    'image': img.image,  # This is the base64 string
+                    'timestamp': img.created_at.isoformat() if hasattr(img, 'created_at') else None
+                })
+            return Response(image_list, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
