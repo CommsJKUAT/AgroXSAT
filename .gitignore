@@ -5,3 +5,4 @@ myenv/
 AgritechSat/BackendApi/__pycache__/
 AgritechSat/Backend/__pycache__/
 AgritechSat/AgritechSat/__pycache__/
+AgritechSat/Backend/migrations/__pycache__/
