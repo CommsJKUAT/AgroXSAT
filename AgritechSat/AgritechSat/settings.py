@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
-
+    'social_django',
 ]
 
 REST_FRAMEWORK = {
@@ -66,6 +66,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,7 +77,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 ROOT_URLCONF = 'AgritechSat.urls'
 TEMPLATES = [
@@ -90,6 +91,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -134,7 +137,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'https://agroxsatsite.onrender.com',
     'http://localhost:5173',
-    'http://localhost:4280'
+    'http://localhost:4280',
+    "http://localhost:5173",
+    "https://agroxsatsite.onrender.com"
    
 ]
 CORS_ALLOW_METHODS = [
@@ -143,6 +148,12 @@ CORS_ALLOW_METHODS = [
     "PUT",
     "DELETE",
     "OPTIONS",
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -150,4 +161,36 @@ CORS_ALLOW_HEADERS = [
     "Authorization",
     "X-Requested-With",
     "Accept",
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# Google OAuth2 settings
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_OAUTH2_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_OAUTH2_CLIENT_SECRET')
+
+# Social auth settings
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'home'
+SOCIAL_AUTH_LOGIN_ERROR_URL = 'login'
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+
+# JWT settings for social auth
+SOCIAL_AUTH_ALLOWED_REDIRECT_URIS = [
+    'http://localhost:5173/auth/callback',  # Your React frontend callback URL
+    'https://agroxsatsite.onrender.com/auth/callback'  # Production callback URL
 ]

@@ -17,6 +17,10 @@ from geopy.geocoders import MapBox
 import requests
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from social_core.backends.google import GoogleOAuth2
+from social_django.utils import load_strategy
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
 load_dotenv()
 
 def homepage(request):
@@ -28,7 +32,7 @@ class imagesapi(APIView):
         try:
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
+                
             else:
                 data = dict(request.data)
                 data_json = data.get('_content', '') 
@@ -49,13 +53,13 @@ class imagesapi(APIView):
     def get(self, request, *args, **kwargs):
         try:
             # Get all images from the database
-            images = Images.objects.all().order_by('-id')  # Most recent first
+            images = Images.objects.all().order_by('-id')  
             # Serialize the images
             image_list = []
             for img in images:
                 image_list.append({
                     'id': img.id,
-                    'image': img.image,  # This is the base64 string
+                    'image': img.image, 
                     'timestamp': img.created_at.isoformat() if hasattr(img, 'created_at') else None
                 })
             return Response(image_list, status=status.HTTP_200_OK)
@@ -141,7 +145,7 @@ class save_gs_coordinates(APIView):
         try:
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
+                
             else:
                 data = dict(request.data)
                 data_json = data.get('_content', '')  
@@ -149,8 +153,7 @@ class save_gs_coordinates(APIView):
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-            print(latitude)
-            print(longitude)
+            
             if latitude is None or longitude is None:
                 return Response({"error": "Missing latitude or longitude"}, status=status.HTTP_400_BAD_REQUEST)
             coords, created = GSCoordinates.objects.update_or_create(
@@ -181,7 +184,7 @@ class CommandView(APIView):
             return JsonResponse({"error": "Missing command"}, status=status.HTTP_400_BAD_REQUEST)
         
         self.__class__.command_list.append(command_data)        
-        print(f"Received command: {command_data}")
+        
         
         return JsonResponse({"success": "Command received"}, status=status.HTTP_200_OK)
 
@@ -190,7 +193,7 @@ class CommandView(APIView):
             return JsonResponse({"error": "No commands available"}, status=status.HTTP_404_NOT_FOUND)
         
         command_to_return = self.__class__.command_list.pop(0)
-        print("Current command list after GET:", self.__class__.command_list)
+        
         return JsonResponse({"command": command_to_return}, status=status.HTTP_200_OK)
     
 #telemetry
@@ -323,18 +326,18 @@ class PayloadHandling(APIView):
             # Check if request.data is a dictionary (it will be if the content is JSON)
             if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
-                print("Parsed as JSON:", data)
+                
             else:
                 # Convert QueryDict to a dictionary
                 data = dict(request.data)
-                print("QueryDict Data:", data)
+                
                 
                 # Extract JSON content from '_content' key
                 data_json = data.get('_content', '') 
-                print(data_json)
-                data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
+                
+                data_json = data_json[0].replace("\r\n", "")  
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
-                print("Extracted Data:", data)
+                
             # Extract temperature and humidity
           
             
@@ -408,7 +411,7 @@ class PayloadHandling(APIView):
 
         
 #satellite location
-@permission_classes([AllowAny])
+
 class SaTracker(APIView):
     def post(self, request, *args, **kwargs):
         try:
@@ -421,7 +424,7 @@ class SaTracker(APIView):
                 if isinstance(data_json, list):
                     data_json = data_json[0].replace("\r\n", "")
                 data = json.loads(data_json)
-            print(data)
+            
             # Extract latitude and longitude from data
             latitude = data.get('La')
             longitude = data.get('L')
@@ -451,3 +454,75 @@ class SaTracker(APIView):
             return Response({"error": "Invalid JSON format"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+User = get_user_model()  # Get the User model
+
+@permission_classes([AllowAny])
+class GoogleLoginView(APIView):
+    def post(self, request):
+        try:
+            
+            # Check for token in either 'credential' or 'token' key
+            token = request.data.get('credential') or request.data.get('token')
+            
+            if not token:
+                return Response({
+                    'error': 'No token provided',
+                    'received_data': request.data
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Initialize the OAuth2 backend
+            strategy = load_strategy(request)
+            backend = GoogleOAuth2(strategy)
+            
+            try:
+                # Validate token and get user info
+                
+                user_data = backend.user_data(token)
+                
+                
+                # Get or create user
+                email = user_data.get('email')
+                if not email:
+                    return Response({
+                        'error': 'Email not found in Google response',
+                        'user_data': user_data
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                user, created = User.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'username': email,
+                        'first_name': user_data.get('given_name', ''),
+                        'last_name': user_data.get('family_name', ''),
+                        'is_active': True
+                    }
+                )
+                
+                # Generate JWT tokens
+                refresh = RefreshToken.for_user(user)
+                
+                return Response({
+                    'access_token': str(refresh.access_token),
+                    'refresh_token': str(refresh),
+                    'user': {
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                    }
+                }, status=status.HTTP_200_OK)
+                
+            except Exception as e:
+                
+                return Response({
+                    'error': 'Invalid token',
+                    'details': str(e)
+                }, status=status.HTTP_400_BAD_REQUEST)
+                
+        except Exception as e:
+            
+            return Response({
+                'error': 'Something went wrong',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
