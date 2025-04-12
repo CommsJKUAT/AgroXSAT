@@ -13,7 +13,7 @@ urlpatterns = [
     path('register/', register, name="register"),
     path('distance/', calculate_distance, name="homepage"),
     path('images/', image_data_view, name="image"),
-    path('login/', views.login),
+    path('login/', views.user_login),
     
     
 ]

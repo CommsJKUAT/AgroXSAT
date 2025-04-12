@@ -1,8 +1,11 @@
-agrosatenv/
-.env
-myenv/
 
+.env
+AgritechSat/AgritechSat/__pycache__/
+AgritechSat/myenv/
 AgritechSat/BackendApi/__pycache__/
 AgritechSat/Backend/__pycache__/
+<<<<<<< HEAD
 AgritechSat/AgritechSat/__pycache__/
+=======
+>>>>>>> f1faaf2a91e348b90157b7d50c969a100d2cd7de
 AgritechSat/Backend/migrations/__pycache__/

@@ -17,8 +17,27 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
+import re
+import dns.resolver  
 
 
+
+def is_valid_email(email):
+    
+    
+    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_pattern, email):
+        return False
+    
+    
+    domain = email.split('@')[1]
+    
+    try:
+        
+        dns.resolver.resolve(domain, 'MX')
+        return True
+    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+        return False
 
 def image_data_view(request):
     image_data = Images.objects.all()  
@@ -41,6 +60,7 @@ def calculate_distance(request):
         form = CoordinateForm()
 
     return render(request, 'calculate_distance.html', {'form': form, 'distance': distance})
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
@@ -51,6 +71,12 @@ def register(request):
         email = data['email']
         password = data['password']
         print(data)
+        
+        # Enhanced email validation
+        if not is_valid_email(email):
+            return Response({
+                "detail": "Invalid email. Please provide a valid email address with an existing domain."
+            }, status=status.HTTP_400_BAD_REQUEST)
         
         if User.objects.filter(username=username).exists():
             return Response({"detail": "User already exists. Log in"}, status=status.HTTP_400_BAD_REQUEST)
@@ -72,7 +98,7 @@ def register(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def login(request):
+def user_login(request):
     try:
         if isinstance(request.data, dict) and '_content' not in request.data:
                 data = request.data
