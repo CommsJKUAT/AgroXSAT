@@ -330,7 +330,7 @@ class PayloadHandling(APIView):
                 print("QueryDict Data:", data)
                 
                 # Extract JSON content from '_content' key
-                data_json = data.get('_content', '')  # Assuming '_content' exists in QueryDict
+                data_json = data.get('_content', '') 
                 print(data_json)
                 data_json = data_json[0].replace("\r\n", "")  # Clean up new lines if any
                 data = json.loads(data_json)  # Convert JSON string to a Python dictionary
