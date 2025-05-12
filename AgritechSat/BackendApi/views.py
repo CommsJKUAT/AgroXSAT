@@ -411,7 +411,7 @@ class PayloadHandling(APIView):
 
         
 #satellite location
-
+@permission_classes([AllowAny])
 class SaTracker(APIView):
     def post(self, request, *args, **kwargs):
         try:
