@@ -499,10 +499,13 @@ class GoogleLoginView(APIView):
                         'is_active': True
                     }
                 )
+                if created:
+                    user.set_unusable_password()
+                    user.save()
                 
                 # Generate JWT tokens
                 refresh = RefreshToken.for_user(user)
-                print(refresh)
+                
                 return Response({
                     'access_token': str(refresh.access_token),
                     'refresh_token': str(refresh),
