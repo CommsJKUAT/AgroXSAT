@@ -465,7 +465,7 @@ class GoogleLoginView(APIView):
             
             # Check for token in either 'credential' or 'token' key
             token = request.data.get('credential') or request.data.get('token')
-            
+            print(token)
             if not token:
                 return Response({
                     'error': 'No token provided',
@@ -480,7 +480,7 @@ class GoogleLoginView(APIView):
                 # Validate token and get user info
                 
                 user_data = backend.user_data(token)
-                
+                print(user_data)
                 
                 # Get or create user
                 email = user_data.get('email')
