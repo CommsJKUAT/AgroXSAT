@@ -461,58 +461,58 @@ User = get_user_model()  # Get the User model
 @permission_classes([AllowAny])
 class GoogleLoginView(APIView):
     def post(self, request):
-    try:
-        print("Incoming data:", request.data)
-
-        token = request.data.get('credential') or request.data.get('token')
-        if not token:
-            return Response({'error': 'No token provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        print("Token received:", token)
-
-        strategy = load_strategy(request)
-        backend = GoogleOAuth2(strategy)
-
         try:
-            user_data = backend.user_data(token)
-            print("User data from Google:", user_data)
+            print("Incoming data:", request.data)
 
-            email = user_data.get('email')
-            if not email:
-                return Response({'error': 'Email not found'}, status=status.HTTP_400_BAD_REQUEST)
+            token = request.data.get('credential') or request.data.get('token')
+            if not token:
+                return Response({'error': 'No token provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-            user, created = User.objects.get_or_create(
-                email=email,
-                defaults={
-                    'username': email,
-                    'first_name': user_data.get('given_name', ''),
-                    'last_name': user_data.get('family_name', ''),
-                    'is_active': True
-                }
-            )
-            if created:
-                user.set_unusable_password()
-                user.save()
+            print("Token received:", token)
 
-            print("User created or retrieved:", user)
+            strategy = load_strategy(request)
+            backend = GoogleOAuth2(strategy)
 
-            refresh = RefreshToken.for_user(user)
-            print("Token generated")
+            try:
+                user_data = backend.user_data(token)
+                print("User data from Google:", user_data)
 
-            return Response({
-                'access_token': str(refresh.access_token),
-                'refresh_token': str(refresh),
-                'user': {
-                    'email': user.email,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                }
-            }, status=status.HTTP_200_OK)
+                email = user_data.get('email')
+                if not email:
+                    return Response({'error': 'Email not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+                user, created = User.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'username': email,
+                        'first_name': user_data.get('given_name', ''),
+                        'last_name': user_data.get('family_name', ''),
+                        'is_active': True
+                    }
+                )
+                if created:
+                    user.set_unusable_password()
+                    user.save()
+
+                print("User created or retrieved:", user)
+
+                refresh = RefreshToken.for_user(user)
+                print("Token generated")
+
+                return Response({
+                    'access_token': str(refresh.access_token),
+                    'refresh_token': str(refresh),
+                    'user': {
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                    }
+                }, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                print("Error during Google auth:", str(e))
+                return Response({'error': 'Invalid token', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            print("Error during Google auth:", str(e))
-            return Response({'error': 'Invalid token', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    except Exception as e:
-        print("Unhandled exception:", str(e))
-        return Response({'error': 'Something went wrong', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print("Unhandled exception:", str(e))
+            return Response({'error': 'Something went wrong', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
