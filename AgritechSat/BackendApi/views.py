@@ -465,7 +465,7 @@ class GoogleLoginView(APIView):
             
             # Check for token in either 'credential' or 'token' key
             token = request.data.get('credential') or request.data.get('token')
-            p
+            
             if not token:
                 return Response({
                     'error': 'No token provided',
