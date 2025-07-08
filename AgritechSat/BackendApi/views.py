@@ -465,7 +465,7 @@ class GoogleLoginView(APIView):
             
             # Check for token in either 'credential' or 'token' key
             token = request.data.get('credential') or request.data.get('token')
-            print(token)
+            p
             if not token:
                 return Response({
                     'error': 'No token provided',
@@ -502,7 +502,7 @@ class GoogleLoginView(APIView):
                 
                 # Generate JWT tokens
                 refresh = RefreshToken.for_user(user)
-                
+                print(refresh)
                 return Response({
                     'access_token': str(refresh.access_token),
                     'refresh_token': str(refresh),
